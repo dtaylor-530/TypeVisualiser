@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Background.png" />
+    <None Remove="Assets\Constructor.png" />
+    <None Remove="Assets\Event.png" />
+    <None Remove="Assets\Field.png" />
+    <None Remove="Assets\Internal.png" />
+    <None Remove="Assets\InternalClass.png" />
+    <None Remove="Assets\InternalDelegate.png" />
+    <None Remove="Assets\InternalEnum.png" />
+    <None Remove="Assets\InternalInterface.png" />
+    <None Remove="Assets\MainIcon.ico" />
+    <None Remove="Assets\MainIcon.png" />
+    <None Remove="Assets\Method.png" />
+    <None Remove="Assets\NonTrivialDependencies.png" />
+    <None Remove="Assets\Property.png" />
+    <None Remove="Assets\Protected.png" />
+    <None Remove="Assets\PublicClass.png" />
+    <None Remove="Assets\PublicDelegate.png" />
+    <None Remove="Assets\PublicEnum.png" />
+    <None Remove="Assets\PublicInterface.png" />
+    <None Remove="Assets\TrivialDependencies.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TypeVisualiser.Messaging\TypeVisualiser.Messaging.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.ViewModel\TypeVisualiser.ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Background.png" />
+    <Resource Include="Assets\Constructor.png" />
+    <Resource Include="Assets\Event.png" />
+    <Resource Include="Assets\Field.png" />
+    <Resource Include="Assets\Internal.png" />
+    <Resource Include="Assets\InternalClass.png" />
+    <Resource Include="Assets\InternalDelegate.png" />
+    <Resource Include="Assets\InternalEnum.png" />
+    <Resource Include="Assets\InternalInterface.png" />
+    <Resource Include="Assets\MainIcon.ico" />
+    <Resource Include="Assets\MainIcon.png" />
+    <Resource Include="Assets\Method.png" />
+    <Resource Include="Assets\NonTrivialDependencies.png" />
+    <Resource Include="Assets\Property.png" />
+    <Resource Include="Assets\Protected.png" />
+    <Resource Include="Assets\PublicClass.png" />
+    <Resource Include="Assets\PublicDelegate.png" />
+    <Resource Include="Assets\PublicEnum.png" />
+    <Resource Include="Assets\PublicInterface.png" />
+    <Resource Include="Assets\TrivialDependencies.png" />
+  </ItemGroup>
+
+</Project>

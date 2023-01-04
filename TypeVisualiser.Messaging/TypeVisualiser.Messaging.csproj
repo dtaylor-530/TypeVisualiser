@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <ProjectReference Include="..\TypeVisualiser.RecentFiles\TypeVisualiser.RecentFiles.csproj" />
+	</ItemGroup>
+</Project>

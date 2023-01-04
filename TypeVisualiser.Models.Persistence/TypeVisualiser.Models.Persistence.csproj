@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="V103\Readme.txt" />
+    <None Remove="V104\Readme.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TypeVisualiser.Geometry\TypeVisualiser.WPF.Geometry.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.WPF.Common\TypeVisualiser.WPF.Common.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Library\TypeVisualiser.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="V103\Readme.txt" />
+    <Resource Include="V104\Readme.txt" />
+  </ItemGroup>
+
+</Project>
