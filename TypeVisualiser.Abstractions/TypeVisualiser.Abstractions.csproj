@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TypeVisualiser.Common\TypeVisualiser.Common.csproj" />
-    <ProjectReference Include="..\TypeVisualiser.RecentFiles\TypeVisualiser.RecentFiles.csproj" />
   </ItemGroup>
 
 </Project>

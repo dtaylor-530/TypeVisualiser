@@ -1,4 +1,6 @@
-﻿namespace TypeVisualiser.Model.Persistence
+﻿using TypeVisualiser.Model;
+
+namespace TypeVisualiser.Model.Persistence
 {
     public interface IVisualisableTypeData
     {
