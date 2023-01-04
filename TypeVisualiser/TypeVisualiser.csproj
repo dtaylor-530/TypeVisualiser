@@ -47,10 +47,11 @@
     <ApplicationIcon>UI\Assets\MainIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Rees.Biz.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>TypeVisualiser.App</StartupObject>
@@ -481,7 +482,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Rees.Biz.snk" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Assets\Internal.png" />
