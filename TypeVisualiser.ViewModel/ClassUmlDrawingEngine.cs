@@ -117,7 +117,7 @@ namespace TypeVisualiser.UI
             this.positionedElements.Clear();
         }
 
-        public void PositionMainSubject(Diagram hostDiagram)
+        public void PositionMainSubject(IDiagram hostDiagram)
         {
             MainDrawingSubject.CenterOnPoint(hostDiagram.Centre);
         }

@@ -5,7 +5,7 @@
                           Background="Transparent"
                           GlassThickness="200"
                           Height="120"
-                          Icon="..\Assets\MainIcon.png"
+                          Icon="/TypeVisualiser.WPF.Views;component/Assets/MainIcon.png"
                           Loaded="OnWindowLoaded"
                           ResizeMode="CanResize"
                           Title="Annotate"
@@ -15,7 +15,7 @@
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="..\Style\ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

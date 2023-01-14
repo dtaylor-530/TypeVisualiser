@@ -10,7 +10,7 @@ namespace TypeVisualiser.Model
     using TypeVisualiser.Models.Abstractions;
 
     [Persistent]
-    public abstract class Association : ICalculatedPositionDiagramContent
+    public abstract class Association : ICalculatedPositionDiagramContent, IName
     {
         private readonly ITrivialFilter trivialFilter;
 

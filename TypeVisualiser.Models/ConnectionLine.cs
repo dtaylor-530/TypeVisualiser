@@ -224,8 +224,8 @@ namespace TypeVisualiser.Model
         {
             if (parent != null)
             {
-                var association = parent.DiagramContent as Association; // Must be association to include parents and fields.
-                if (association != null && !(association is SubjectAssociation)) // Must not be the main subject but rather the element being pointed at.
+                // Must be association to include parents and fields.
+                if (parent.DiagramContent is IName association) // Must not be the main subject but rather the element being pointed at.
                 {
                     this.primaryParent = parent as DiagramElement ?? throw new Exception("yt 455 4444");
                     ToolTip = association.Name;

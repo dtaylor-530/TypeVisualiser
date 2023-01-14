@@ -31,7 +31,7 @@
         /// </summary>
         /// <typeparam name="T">The message to send</typeparam>
         /// <param name="message">The message.</param>
-        public static void Send<T>(T message)
+        public void Send<T>(T message) where T : mbox.MessageBase
         {
             lock (SyncRoot)
             {

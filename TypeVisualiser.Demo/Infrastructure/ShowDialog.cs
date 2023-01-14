@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StructureMap;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,13 @@ namespace TypeVisualiser.Demo
 {
     public class ShowDialog : IShowDialog
     {
+        private readonly IContainer container;
+
+        public ShowDialog(IContainer container)
+        {
+            this.container = container;
+        }
+
         public string? ShowAnnotationInputBox(string text)
         {
             var inputBox = new AnnotationInputBox { InputText = text };
@@ -29,7 +37,7 @@ namespace TypeVisualiser.Demo
 
         public void ShowUsageDialog(IVisualisableTypeWithAssociations subject, FieldAssociation fieldAssociation)
         {
-             new UsageDialog().ShowDialog("Resources.ApplicationName", subject.Name, subject.Modifiers.TypeTextName, fieldAssociation);
+             new UsageDialog(container).ShowDialog("Resources.ApplicationName", subject.Name, subject.Modifiers.TypeTextName, fieldAssociation);
         }
     }
 }

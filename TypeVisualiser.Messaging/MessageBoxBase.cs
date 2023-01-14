@@ -1,6 +1,7 @@
 namespace TypeVisualiser.Messaging
 {
     using System;
+    using TypeVisualiser.Abstractions;
 
     public abstract class MessageBoxBase : IUserPromptMessage
     {

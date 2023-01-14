@@ -1,4 +1,4 @@
-﻿namespace TypeVisualiser.Messaging
+﻿namespace TypeVisualiser.Abstractions
 {
     using System;
 

@@ -198,7 +198,7 @@ namespace TypeVisualiser.Model
                 return;
             }
 
-            MessagingGate.Send(new DiagramElementChangedMessage(this.diagramId) { ChangedElement = this });
+            messenger.Send(new DiagramElementChangedMessage(this.diagramId) { ChangedElement = this });
         }
 
         private void RaisePropertyChanged(string propertyName)

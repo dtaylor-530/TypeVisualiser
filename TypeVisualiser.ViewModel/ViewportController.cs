@@ -24,11 +24,11 @@ namespace TypeVisualiser.UI
         private ClassUmlDrawingEngine drawingEngine;
         private ViewportControllerFilter filter;
         private bool hideBackground;
-        private Diagram hostDiagram;
+        private IDiagram hostDiagram;
 
         private DiagramElement subjectDiagramElement;
 
-        public ViewportController(IContainer factory)
+        public ViewportController(IContainer factory) : base(factory)
         {
             this.doNotUseFactory = factory;
         }
@@ -293,13 +293,13 @@ namespace TypeVisualiser.UI
             }
 
             var saveData = new TypeVisualiserLayoutFile
-                {
-                    CanvasLayout = canvasLayoutData,
-                    Subject = (VisualisableTypeSubjectData)Subject.ExtractPersistentData(),
-                    AssemblyFullName = Subject.AssemblyFullName,
-                    AssemblyFileName = Subject.AssemblyFileName,
-                    FileVersion = GetType().Assembly.GetName().Version.ToString(),
-                };
+            {
+                CanvasLayout = canvasLayoutData,
+                Subject = (VisualisableTypeSubjectData)Subject.ExtractPersistentData(),
+                AssemblyFullName = Subject.AssemblyFullName,
+                AssemblyFileName = Subject.AssemblyFileName,
+                FileVersion = GetType().Assembly.GetName().Version.ToString(),
+            };
             saveData.AssemblyFileName = saveData.Subject.AssemblyFileName ?? GetType().Assembly.Location;
             return saveData;
         }
@@ -369,8 +369,8 @@ namespace TypeVisualiser.UI
             {
                 UserPrompt.Show("Resources.ViewportController_Error_in_diagram_file",
                                 "Resources.ViewportController_Some_types_are_not_in_assembly_anymore" + string.Join(", ", typesNoLongerInDiagram.Select(x => x.Name)));
-            //UserPrompt.Show(Resources.ViewportController_Error_in_diagram_file,
-            //                        Resources.ViewportController_Some_types_are_not_in_assembly_anymore + string.Join(", ", typesNoLongerInDiagram.Select(x => x.Name)));
+                //UserPrompt.Show(Resources.ViewportController_Error_in_diagram_file,
+                //                        Resources.ViewportController_Some_types_are_not_in_assembly_anymore + string.Join(", ", typesNoLongerInDiagram.Select(x => x.Name)));
             }
         }
 
@@ -456,9 +456,17 @@ namespace TypeVisualiser.UI
             }
 
             Type t = fileManager.RefreshType(Subject.AssemblyQualifiedName, Subject.AssemblyFileName);
-            IVisualisableTypeWithAssociations subject = fileManager.RefreshSubject(t);
-            Clear();
-            AssignDiagramData(subject);
+            if (fileManager is IFileManager<IVisualisableTypeWithAssociations> fileManager2)
+            {
+                IVisualisableTypeWithAssociations subject = fileManager2.RefreshSubject(t);
+                Clear();
+                AssignDiagramData(subject);
+            }
+            else
+            {
+                throw new Exception("g 5e4");
+            }
+
             Dispatcher.BeginInvoke(() =>
                 {
                     PositionDiagramElements();
@@ -472,7 +480,7 @@ namespace TypeVisualiser.UI
         /// Should not be used externally, the diagram constructor must be the only caller of this.
         /// </summary>
         /// <param name="diagram">The new host diagram.</param>
-        public void SetHostDiagram(Diagram diagram)
+        public void SetHostDiagram(IDiagram diagram)
         {
             if (this.hostDiagram != null)
             {
@@ -511,7 +519,7 @@ namespace TypeVisualiser.UI
 
         private string? EditAnnotationText(AnnotationData annotation)
         {
-        
+
 
             string? result = this.Factory.GetInstance<IShowDialog>().ShowAnnotationInputBox(annotation.Text);
 
@@ -525,7 +533,7 @@ namespace TypeVisualiser.UI
 
         private static IVisualisableTypeData FindTypeInFile(TypeVisualiserLayoutFile data, string id)
         {
-            if(data.Subject is not VisualisableTypeSubjectData subject)
+            if (data.Subject is not VisualisableTypeSubjectData subject)
             {
                 throw new Exception("$ r eretrrr");
             }

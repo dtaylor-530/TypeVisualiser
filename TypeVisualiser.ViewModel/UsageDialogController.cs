@@ -6,6 +6,7 @@ namespace TypeVisualiser.UI
     using System.Linq;
     using Model;
     using Model.Persistence;
+    using StructureMap;
     //using Properties;
     using WpfUtilities;
 
@@ -14,7 +15,13 @@ namespace TypeVisualiser.UI
         private IEnumerable<AssociationUsageDescriptor> dataList;
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed ok here.")]
-        public UsageDialogController(string title, string subjectName, string subjectType, FieldAssociation association)
+        public UsageDialogController(          
+            IContainer container, 
+            string title, 
+            string subjectName, 
+            string subjectType, 
+            FieldAssociation association)
+            :base(container)
         {
             if (association == null)
             {
@@ -23,7 +30,7 @@ namespace TypeVisualiser.UI
             }
 
             DefaultButtonCaption = "Close";
-            ImageSource = "../Assets/MainIcon.png";
+            ImageSource = "/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png";
             DialogTitle = title;
             HeadingCaption = BuildHeadingCaption(subjectName, subjectType, association);
             DataList = association.UsageDescriptors;

@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models"
+             xmlns:ass="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models.Associations"
              xmlns:Persistence="clr-namespace:TypeVisualiser.Model.Persistence;assembly=TypeVisualiser.Models.Persistence"
              xmlns:vm="clr-namespace:TypeVisualiser.UI;assembly=TypeVisualiser.ViewModels"
              xmlns:Utils="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
@@ -104,7 +105,7 @@
                 </Grid>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type Model:Association}">
+            <DataTemplate DataType="{x:Type ass:Association}">
                 <Grid Cursor="Hand">
                     <Grid.CommandBindings>
                         <!-- Need to use routed commands here due to Context menus not being able to bind easily to the controller of the parent's (data template) templated parent's controller. -->

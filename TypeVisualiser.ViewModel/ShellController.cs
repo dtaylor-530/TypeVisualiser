@@ -41,9 +41,8 @@ namespace TypeVisualiser.UI
     public class ShellController : TypeVisualiserControllerBase
     {
         private const int LoadingProgressMaximum = 29;
-        private readonly IContainer factory;
-        private readonly IFileManager fileManager;
-        private readonly Abstractions.IMessenger messenger;
+        private readonly IContainer container;
+        private readonly IFileManager<IVisualisableTypeWithAssociations> fileManager;
         private bool connectorTypeDirect;
         private bool connectorTypeSnap;
         private Diagram currentView;
@@ -65,23 +64,22 @@ namespace TypeVisualiser.UI
             Justification = "Reviewed and acceptable here, VerifyPropertyName and RaisePropertyChanged are not going to create unwanted side affects")]
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope",
             Justification = "Calling dipose on a controller is not possible within the scope of one method, it is bound to the UI.")]
-        public ShellController(IContainer factory)
+        public ShellController(IContainer factory):base(factory)
         {
             if (factory == null)
             {
                 throw new ArgumentNullResourceException("factory", "Resources.General_Given_Parameter_Cannot_Be_Null");
                 //throw new ArgumentNullResourceException("factory", Resources.General_Given_Parameter_Cannot_Be_Null);
             }
-            messenger = factory.GetInstance<Abstractions.IMessenger>();
-            messenger.Register(this, new Action<ChooseAssemblyMessage>(x => ChooseAssemblyExecute()));
-            messenger.Register(this, new Action<ShutdownMessage>(x => Cleanup()));
-            messenger.Register<NavigateToDiagramAssociationMessage>(this, OnNavigateToDiagramAssociation);
+            Messenger.Register(this, new Action<ChooseAssemblyMessage>(x => ChooseAssemblyExecute()));
+            Messenger.Register(this, new Action<ShutdownMessage>(x => Cleanup()));
+            Messenger.Register<NavigateToDiagramAssociationMessage>(this, OnNavigateToDiagramAssociation);
             //messenger.Register(this, OnNavigateToDiagramAssociation);
-            messenger.Register<RecentFileDeleteMessage>(this, OnDeleteRecentlyUsedFile);
+            Messenger.Register<RecentFileDeleteMessage>(this, OnDeleteRecentlyUsedFile);
 
-            this.factory = factory;
+            this.container = factory;
             ConnectorTypeDirect = true;
-            this.fileManager = factory.GetInstance<IFileManager>();
+            this.fileManager = factory.GetInstance<IFileManager<IVisualisableTypeWithAssociations>>();
             this.fileManager.Initialise();
             Current = this;
             OpenViews = new ObservableCollection<Diagram>();
@@ -123,7 +121,7 @@ namespace TypeVisualiser.UI
                 RaisePropertyChanged("ConnectorTypeDirect");
                 if (value)
                 {
-                    var connectorBuilder = this.factory.TryGetInstance<IConnectorBuilder>(ConnectorType.Direct.ToString());
+                    var connectorBuilder = this.container.TryGetInstance<IConnectorBuilder>(ConnectorType.Direct.ToString());
                     ConnectionLine.ConnectorBuilder = connectorBuilder ?? new DirectLineConnectorBuilder();
                     ConnectorTypeSnap = false;
                     if (CurrentView != null)
@@ -149,7 +147,7 @@ namespace TypeVisualiser.UI
                 RaisePropertyChanged("ConnectorTypeSnap");
                 if (value)
                 {
-                    ConnectionLine.ConnectorBuilder = this.factory.GetInstance<IConnectorBuilder>(ConnectorType.Snap.ToString());
+                    ConnectionLine.ConnectorBuilder = this.container.GetInstance<IConnectorBuilder>(ConnectorType.Snap.ToString());
                     ConnectorTypeDirect = false;
                     if (CurrentView != null)
                     {
@@ -222,12 +220,12 @@ namespace TypeVisualiser.UI
         {
             get
             {
-                return this.factory.GetInstance<ITrivialFilter>().HideSecondaryAssociations;
+                return this.container.GetInstance<ITrivialFilter>().HideSecondaryAssociations;
             }
 
             set
             {
-                this.factory.GetInstance<ITrivialFilter>().HideSecondaryAssociations = value;
+                this.container.GetInstance<ITrivialFilter>().HideSecondaryAssociations = value;
                 VerifyPropertyName("HideSecondaryAssociations");
                 RaisePropertyChanged("HideSecondaryAssociations");
             }
@@ -241,11 +239,11 @@ namespace TypeVisualiser.UI
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Reqd by WPF binding")]
         public bool HideSystemTypes
         {
-            get { return this.factory.GetInstance<ITrivialFilter>().HideSystemTypes; }
+            get { return this.container.GetInstance<ITrivialFilter>().HideSystemTypes; }
 
             set
             {
-                this.factory.GetInstance<ITrivialFilter>().HideSystemTypes = value;
+                this.container.GetInstance<ITrivialFilter>().HideSystemTypes = value;
                 VerifyPropertyName("HideSystemTypes");
                 RaisePropertyChanged("HideSystemTypes");
             }
@@ -264,11 +262,11 @@ namespace TypeVisualiser.UI
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Reqd by WPF binding")]
         public bool HideTrivialTypes
         {
-            get { return this.factory.GetInstance<ITrivialFilter>().HideTrivialTypes; }
+            get { return this.container.GetInstance<ITrivialFilter>().HideTrivialTypes; }
 
             set
             {
-                this.factory.GetInstance<ITrivialFilter>().HideTrivialTypes = value;
+                this.container.GetInstance<ITrivialFilter>().HideTrivialTypes = value;
                 VerifyPropertyName("HideTrivialTypes");
                 RaisePropertyChanged("HideTrivialTypes");
             }
@@ -364,7 +362,7 @@ namespace TypeVisualiser.UI
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not possible to wrap into a using block. Is disposed by OnTabCloseExecute")]
         protected virtual Diagram CreateDiagram()
         {
-            return new Diagram(messenger, new ViewportController(this.factory));
+            return new Diagram(Messenger, new ViewportController(this.container));
         }
 
         public override void RaisePropertyChanged(string propertyName)
@@ -425,8 +423,8 @@ namespace TypeVisualiser.UI
                 return;
             }
 
-            ChooseTypeController = new ChooseTypeController(assembly, OnChooseTypeChosenFromDialog);
-            bool? result = this.factory.GetInstance<IShowDialog>().ShowChooseTypeDialog(ChooseTypeController);
+            ChooseTypeController = new ChooseTypeController(container, assembly, OnChooseTypeChosenFromDialog);
+            bool? result = this.container.GetInstance<IShowDialog>().ShowChooseTypeDialog(ChooseTypeController);
             Logger.Instance.WriteEntry("Loading types from DLL for selection. ShowDiaglog returned {0}", result);
         }
 
@@ -476,7 +474,7 @@ namespace TypeVisualiser.UI
 
         private void OnEditTrivialExcludeListExecute()
         {
-            this.factory.GetInstance<ITrivialFilter>().EditTrivialList();
+            this.container.GetInstance<ITrivialFilter>().EditTrivialList();
         }
 
         private void OnHelpAboutExecute()

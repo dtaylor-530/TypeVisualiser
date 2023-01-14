@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using StructureMap;
 using StructureMap.Pipeline;
-
+using TypeVisualiser.Abstractions;
 using TypeVisualiser.Messaging;
 using TypeVisualiser.Models.Abstractions;
 //using TypeVisualiser.Startup;
@@ -22,21 +21,20 @@ namespace TypeVisualiser.Model
         // ReSharper disable FieldCanBeMadeReadOnly.Local
 
         //// ReSharper restore FieldCanBeMadeReadOnly.Local
-        private IContainer doNotUseFactory;
-
-        private IUserPromptMessage userPrompt = new WindowsMessageBox();
-
+        private IContainer factory;
+        private readonly IUserPromptMessage userPrompt;
 
         public ModelBuilder(IContainer factory)
         {
-            this.doNotUseFactory = factory;
+            this.factory = factory;
+            this.userPrompt = factory.GetInstance< IUserPromptMessage>();
         }
 
         protected IContainer Factory
         {
             get
             {
-                return this.doNotUseFactory;
+                return this.factory;
             }
         }
 

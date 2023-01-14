@@ -6,9 +6,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TypeVisualiser.Geometry\TypeVisualiser.WPF.Geometry.csproj" />
-    <ProjectReference Include="..\TypeVisualiser.Messaging\TypeVisualiser.Messaging.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TypeVisualiser.Geometry\TypeVisualiser.WPF.Geometry.csproj" />
+		<ProjectReference Include="..\TypeVisualiser.Messaging\TypeVisualiser.Messaging.csproj" />
+	</ItemGroup>
 
 </Project>

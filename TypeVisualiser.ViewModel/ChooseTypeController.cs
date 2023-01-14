@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 using GalaSoft.MvvmLight.Command;
+using StructureMap;
 using TypeVisualiser.Messaging;
 using TypeVisualiser.Model;
 using TypeVisualiser.UI.WpfUtilities;
@@ -28,7 +29,7 @@ namespace TypeVisualiser.UI
 
         private SelectableType selectedItem;
 
-        public ChooseTypeController(Assembly assemblyToLoadFrom, Action<Type> onTypeChosen)
+        public ChooseTypeController(IContainer container, Assembly assemblyToLoadFrom, Action<Type> onTypeChosen):base(container)
         {
             this.onTypeChosen = onTypeChosen;
             this.assembly = assemblyToLoadFrom;
@@ -81,7 +82,7 @@ namespace TypeVisualiser.UI
 
         public void ApplyFilter()
         {
-            ICollectionView view = CollectionViewSource.GetDefaultView(Types);
+            System.ComponentModel.ICollectionView view = CollectionViewSource.GetDefaultView(Types);
             view.Filter = text =>
                 {
                     if (string.IsNullOrWhiteSpace(SearchText) || text == null)

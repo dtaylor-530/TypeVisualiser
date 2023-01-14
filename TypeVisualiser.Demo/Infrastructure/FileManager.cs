@@ -7,10 +7,8 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using System.Xml;
-
-    using GalaSoft.MvvmLight.Messaging;
-
     using StructureMap;
+    using TypeVisualiser.Abstractions;
     using TypeVisualiser.DemoTypes;
     using TypeVisualiser.Messaging;
     using TypeVisualiser.Model;
@@ -19,7 +17,7 @@
     using TypeVisualiser.RecentFiles;
     using TypeVisualiser.Startup;
 
-    public class FileManager : IFileManager
+    public class FileManager : IFileManager<IVisualisableTypeWithAssociations>
     {
         private readonly IMessenger messenger;
         private readonly StructureMap.IContainer container;
@@ -34,15 +32,15 @@
         private Func<IUserPromptOpenFile> userPromptOpenFileFactory =
             () =>
             new WindowsOpenFileDialog
-                {
-                    AddExtension = true, 
-                    CheckFileExists = true, 
-                    CheckPathExists = true, 
-                    DefaultExt = "*.DLL", 
-                    Title = "Select a .NET Assembly (DLL) to load a type from", 
-                    Filter = ".NET Assemblies (*.DLL, *.EXE)|*.DLL;*.EXE", 
-                    FilterIndex = 0, 
-                };
+            {
+                AddExtension = true,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                DefaultExt = "*.DLL",
+                Title = "Select a .NET Assembly (DLL) to load a type from",
+                Filter = ".NET Assemblies (*.DLL, *.EXE)|*.DLL;*.EXE",
+                FilterIndex = 0,
+            };
 
         private Func<IUserPromptSaveFile> userPromptSaveFileFactory = () => new WindowsSaveDialog { AddExtension = true, DefaultExt = "tvd", Filter = "Type Visualiser Diagram (*.tvd)|*.tvd" };
 

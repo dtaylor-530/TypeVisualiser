@@ -7,14 +7,14 @@
                           xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           Background="Transparent"
                           GlassThickness="200"
-                          Icon="..\Assets\MainIcon.png"
+                          Icon="/TypeVisualiser.WPF.Views;component/Assets/MainIcon.png"
                           DataContextChanged="OnDataContextChanged"
                           Height="480"
                           Title="{Binding DialogTitle}">
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="..\Style\ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate x:Key="TypeTemplate">

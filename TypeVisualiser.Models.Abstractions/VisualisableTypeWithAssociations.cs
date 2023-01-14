@@ -41,17 +41,17 @@ namespace TypeVisualiser.Model
 
         private AssociationLoadStatus loadStatus = AssociationLoadStatus.ConstructedOnly;
 
-        public VisualisableTypeWithAssociations(IContainer container, Type type)
-            : this(container, type, 0)
+        public VisualisableTypeWithAssociations(Type type, IContainer container)
+            : this(type, 0, container)
         {
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed, ok here")]
-        public VisualisableTypeWithAssociations(IContainer container, Type type, int depth)
-            : base(container, type, new VisualisableTypeSubjectData(), depth == 0 ? SubjectOrAssociate.Subject : SubjectOrAssociate.Associate)
-        {
-            this.ConstructorSharedLogic(type, depth);
-        }
+        //public VisualisableTypeWithAssociations(Type type, int depth)
+        //    : base(type, new VisualisableTypeSubjectData(), depth == 0 ? SubjectOrAssociate.Subject : SubjectOrAssociate.Associate)
+        //{
+        //    this.ConstructorSharedLogic(type, depth);
+        //}
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed, ok here")]
         public VisualisableTypeWithAssociations(Type type, int depth, IContainer factory)
@@ -211,9 +211,8 @@ namespace TypeVisualiser.Model
             }
         }
 
-        public override VisualisableTypeData ExtractPersistentData()
+        public override IVisualisableTypeData ExtractPersistentData()
         {
-            //return new VisualisableTypeWithAssociationsDataAdaptor(this.AllAssociations, this.ThisTypeImplements, this.Parent, this.PersistentDataField).Adapt();
             return new VisualisableTypeWithAssociationsDataAdaptor(this.AllAssociations, this.ThisTypeImplements, this.Parent, this.PersistentDataField).Adapt();
         }
 

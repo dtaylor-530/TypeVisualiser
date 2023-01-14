@@ -4,12 +4,12 @@
                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-                          xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models" 
+                          xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models.Associations" 
                           xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           xmlns:Converters1="clr-namespace:TypeVisualiser.UI.Converters;assembly=TypeVisualiser.WPF.Library"
                           Background="Transparent"
                GlassThickness="200"
-               Icon="..\Assets\MainIcon.png"
+               Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
                SizeToContent="WidthAndHeight"
                MaxHeight="480"
                MaxWidth="640"
@@ -19,7 +19,7 @@
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="..\Style\ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Converters1:MemberKindToImageConverter x:Key="MemberKindToImageConverter" />

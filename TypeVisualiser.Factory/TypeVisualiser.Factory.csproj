@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-Windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TypeVisualiser.Models.Abstractions\TypeVisualiser.Models.Abstractions.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+		<PackageReference Include="MassTransit.StructureMap" Version="7.3.1" />
+		<PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
+	</ItemGroup>
+	
+</Project>

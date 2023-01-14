@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-Windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TypeVisualiser.ILAnalyser\TypeVisualiser.ILAnalyser.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Models.Associations\TypeVisualiser.Models.Associations.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Models.Persistence\TypeVisualiser.Models.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>

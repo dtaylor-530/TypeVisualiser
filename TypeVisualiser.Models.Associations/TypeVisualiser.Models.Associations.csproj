@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0-Windows</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\TypeVisualiser.Abstractions\TypeVisualiser.Abstractions.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.Common\TypeVisualiser.Common.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.ILAnalyser\TypeVisualiser.ILAnalyser.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.Models.Persistence.Shared\TypeVisualiser.Models.Persistence.Shared.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.Models.UI.Abstractions\TypeVisualiser.Models.UI.Abstractions.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.Models\TypeVisualiser.Models.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.RecentFiles\TypeVisualiser.RecentFiles.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.WPF.Common\TypeVisualiser.WPF.Common.csproj" />
+	</ItemGroup>
+	
+</Project>

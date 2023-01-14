@@ -6,12 +6,13 @@
     using System.Windows;
     using TypeVisualiser.Abstractions;
     using TypeVisualiser.Messaging;
+    using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
 
     /// <summary>
     /// A class representing any diagram instance. Not just a type dependency diagram.
     /// </summary>
-    public class Diagram : INotifyPropertyChanged
+    public class Diagram : IDiagram, INotifyPropertyChanged
     {
         private const double MaximumScaleValue = 1.5;
 

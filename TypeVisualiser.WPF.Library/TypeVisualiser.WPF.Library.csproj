@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TypeVisualiser.Messaging\TypeVisualiser.Messaging.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Models.Abstractions\TypeVisualiser.Models.Abstractions.csproj" />
     <ProjectReference Include="..\TypeVisualiser.ViewModel\TypeVisualiser.ViewModels.csproj" />
     <ProjectReference Include="..\WPF.Library\WPF.Library.csproj" />
   </ItemGroup>

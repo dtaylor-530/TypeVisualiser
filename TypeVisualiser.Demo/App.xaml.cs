@@ -6,6 +6,7 @@
 
     using GalaSoft.MvvmLight.Messaging;
     using StructureMap;
+    using TypeVisualiser.Abstractions;
     using TypeVisualiser.Demo;
     using TypeVisualiser.Demo.Infrastructure;
     using TypeVisualiser.ILAnalyser;
@@ -79,15 +80,16 @@
                         config.For<IDiagramDimensions>().Singleton().Use<DiagramDimensions>();
 
                         // TODO this is broken - shouldnt be a singleton there is one per diagram. Its only working because it is refreshed each time a diagram is displayed.
-                        config.For<IFileManager>().Use<FileManager>();
-                        config.For<IMessenger>().Use(Messenger.Default);
+                        config.For<IFileManager<IVisualisableTypeWithAssociations>>().Singleton().Use<FileManager>();
+                        config.For<IFileManager>().Singleton().Use<FileManager>();
+                        //config.For<IMessenger>().Use(Messenger.Default);
                         config.For<IMethodBodyReader>().Use<MethodBodyReader>();
-                        config.For<IModelBuilder>().Use<ModelBuilder>();
-                        config.For<IRecentFiles>().Use<RecentFilesXml>();
+                        config.For<IModelBuilder>().Singleton().Use<ModelBuilder>();
+                        config.For<IRecentFiles>().Singleton().Use<RecentFilesXml>();
                         config.For<ITrivialFilter>().Singleton().Use<TrivialFilter>();
                         config.For<IVisualisableType>().Use<VisualisableType>();
                         config.For<IVisualisableTypeWithAssociations>().Use<VisualisableTypeWithAssociations>();
-                        config.For<IShowDialog>().Use<ShowDialog>();
+                        config.For<IShowDialog>().Singleton().Use<ShowDialog>();
                         config.For<Abstractions.IMessenger>().Singleton().Use<MessagingGate>();
                         config.For<IUserPromptMessage>().Singleton().Use<WindowsMessageBox>();
                         config.For<IXamlService>().Singleton().Use<XamlService>();

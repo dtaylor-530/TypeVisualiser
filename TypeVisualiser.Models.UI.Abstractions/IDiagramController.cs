@@ -81,6 +81,8 @@ namespace TypeVisualiser.Models.Abstractions
         /// Should not be used externally, the diagram constructor must be the only caller of this.
         /// </summary>
         /// <param name="diagram">The new host diagram.</param>
-        void SetHostDiagram(Diagram diagram);
+        void SetHostDiagram(IDiagram diagram);
     }
+
+
 }

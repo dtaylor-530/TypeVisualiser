@@ -2,22 +2,26 @@ namespace TypeVisualiser.UI.WpfUtilities
 {
     using System.Windows.Threading;
     using GalaSoft.MvvmLight;
-    using GalaSoft.MvvmLight.Messaging;
     using Messaging;
+    using StructureMap;
+    using TypeVisualiser.Abstractions;
 
     public class TypeVisualiserControllerBase :  ViewModelBase
     {
         private readonly Dispatcher doNotUseDispatcher;
-// ReSharper disable FieldCanBeMadeReadOnly.Local
+        private readonly IMessenger messenger;
+
+        // ReSharper disable FieldCanBeMadeReadOnly.Local
         // Required for testing
-        private IMessenger doNotUseMessenger = GalaSoft.MvvmLight.Messaging.Messenger.Default;
-// ReSharper restore FieldCanBeMadeReadOnly.Local
+
+        // ReSharper restore FieldCanBeMadeReadOnly.Local
         private IUserPromptMessage doNotUseUserPrompt;
 
-        public TypeVisualiserControllerBase()
+        public TypeVisualiserControllerBase(IContainer container)
         {
             // This relies on the Xaml being responsible for instantiating the controller.
             this.doNotUseDispatcher = Dispatcher.CurrentDispatcher;
+            this.messenger = container.GetInstance<IMessenger>();
         }
 
         protected Dispatcher Dispatcher
@@ -32,7 +36,7 @@ namespace TypeVisualiser.UI.WpfUtilities
         {
             get
             {
-                return this.doNotUseMessenger;
+                return this.messenger;
             }
         }
 
