@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using GalaSoft.MvvmLight.Messaging;
 using StructureMap;
+using TypeVisualiser.Abstractions;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Model;
-using TypeVisualiser.Startup;
+using TypeVisualiser.Models.Abstractions;
 
 namespace TypeVisualiser.UI
 {
@@ -14,7 +16,8 @@ namespace TypeVisualiser.UI
     /// </summary>
     internal class ClassUmlDrawingEngine
     {
-        private IContainer doNotUseFactory;
+        private readonly IContainer container;
+        private readonly Abstractions.IMessenger messenger;
         private ICollection<DiagramElement> allElements;
 
         /// <summary>
@@ -25,17 +28,16 @@ namespace TypeVisualiser.UI
 
         private Func<DiagramElement, bool, bool> shouldSecondaryElementBeVisible;
 
-        protected IContainer Factory
-        {
-            get { return this.doNotUseFactory ?? (this.doNotUseFactory = IoC.Default); }
-        }
 
-        public ClassUmlDrawingEngine(Guid diagramId, IVisualisableTypeWithAssociations mainSubject)
+
+        public ClassUmlDrawingEngine(IContainer container, Guid diagramId, IVisualisableTypeWithAssociations mainSubject)
         {
+            this.container = container;
+            messenger = container.GetInstance<Abstractions.IMessenger>();
             DiagramId = diagramId;
             MainSubject = mainSubject;
-            var subjectAssociation = Factory.GetInstance<SubjectAssociation>().Initialise(mainSubject);
-            MainDrawingSubject = new DiagramElement(DiagramId, subjectAssociation);
+            var subjectAssociation = container.GetInstance<SubjectAssociation>().Initialise(mainSubject);
+            MainDrawingSubject = new DiagramElement(DiagramId, subjectAssociation, messenger);
         }
 
         public Guid DiagramId { get; private set; }
@@ -54,7 +56,7 @@ namespace TypeVisualiser.UI
                 AddDiagramElementForParentAssociation(@interface, addedElements);
             }
 
-            addedElements.AddRange(MainSubject.AllAssociations.Select(association => new DiagramElement(DiagramId, association)));
+            addedElements.AddRange(MainSubject.AllAssociations.Select(association => new DiagramElement(DiagramId, association, messenger)));
 
             return addedElements;
         }
@@ -127,7 +129,7 @@ namespace TypeVisualiser.UI
                 return;
             }
 
-            addedElements.Add(new DiagramElement(DiagramId, parent));
+            addedElements.Add(new DiagramElement(DiagramId, parent, messenger));
 
             var parentType = parent.AssociatedTo as IVisualisableTypeWithAssociations;
             if (parentType != null)
@@ -195,14 +197,14 @@ namespace TypeVisualiser.UI
 
             // Create the line diagram element and add to the diagram collection.
             // The line is linked to the arrow head position.
-            var lineDiagramElement = new DiagramElement(DiagramId, route) { TopLeft = route.From };
+            var lineDiagramElement = new DiagramElement(DiagramId, route, messenger) { TopLeft = route.From };
             lineDiagramElement.RegisterPositionDependency(new[] { fromElement, destinationElement }, IsOverlappingWithOtherControls);
             addedElements.Add(lineDiagramElement);
 
             // Create an arrow head based on the best route and add to the diagram collection.
             // The arrow head is linked to the associate diagram element.
             ArrowHead arrowHead = destinationAssociation.CreateLineHead();
-            var headDiagramElement = new DiagramElement(DiagramId, arrowHead) { TopLeft = route.To };
+            var headDiagramElement = new DiagramElement(DiagramId, arrowHead, messenger) { TopLeft = route.To };
             headDiagramElement.RegisterPositionDependency(new[] { lineDiagramElement }, IsOverlappingWithOtherControls);
             addedElements.Add(headDiagramElement);
 

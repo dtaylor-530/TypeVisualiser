@@ -6,6 +6,7 @@ namespace TypeVisualiser.Model
     using System.Linq;
 
     using TypeVisualiser.Model.Persistence;
+    using TypeVisualiser.Models.Abstractions;
 
     public class ConsumeAssociation : FieldAssociation
     {

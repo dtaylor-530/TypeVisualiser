@@ -4,6 +4,9 @@
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
+    using TypeVisualiser.Abstractions;
+    using TypeVisualiser.Messaging;
+    using TypeVisualiser.Models.Abstractions;
 
     /// <summary>
     /// A class representing any diagram instance. Not just a type dependency diagram.
@@ -38,7 +41,10 @@
 
         private IDiagramController controller;
 
-        public Diagram(IDiagramController content)
+
+        public event Action Closed;
+
+        public Diagram(IMessenger messenger, IDiagramController content)
         {
             this.Id = Guid.NewGuid();
             this.Controller = content ?? throw new ArgumentNullResourceException("content", "Resources.General_Given_Parameter_Cannot_Be_Null");
@@ -48,6 +54,13 @@
             this.ContentHeight = MinimumDiagramDimensionY;
             this.ContentWidth = MinimumDiagramDimensionX;
             this.ContentScale = 1;
+
+            messenger.Register<CloseDiagramMessage>(this, Close);
+        }
+
+        private void Close(CloseDiagramMessage obj)
+        {
+            Closed?.Invoke();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

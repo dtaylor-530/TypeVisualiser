@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities">
+                    xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library">
     <Style TargetType="{x:Type WpfUtilities:ZoomAndPanControl}">
 
         <Setter Property="Template">

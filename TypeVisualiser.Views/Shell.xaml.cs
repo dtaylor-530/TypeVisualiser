@@ -17,7 +17,7 @@ namespace TypeVisualiser.UI.Views
         {
             get
             {
-                return DataContext as ShellController;
+                return this.DataContext as ShellController;
             }
         }
 

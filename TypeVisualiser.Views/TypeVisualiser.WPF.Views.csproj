@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TypeVisualiser.Messaging\TypeVisualiser.Messaging.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.ViewModel\TypeVisualiser.ViewModels.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.WPF.Library\TypeVisualiser.WPF.Library.csproj" />
+    <ProjectReference Include="..\WPF.Library\WPF.Library.csproj" />
+  </ItemGroup>
+
+</Project>

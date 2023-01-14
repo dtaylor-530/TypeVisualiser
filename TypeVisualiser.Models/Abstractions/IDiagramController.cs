@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using GalaSoft.MvvmLight;
+using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
 
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.Models.Abstractions
 {
     public interface IDiagramController : ICleanup, INotifyPropertyChanged
     {

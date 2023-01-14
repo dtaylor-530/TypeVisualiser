@@ -1,4 +1,5 @@
 using System;
+using TypeVisualiser.Library;
 using TypeVisualiser.Model;
 
 namespace TypeVisualiser.Messaging
@@ -9,6 +10,6 @@ namespace TypeVisualiser.Messaging
         {
         }
 
-        public DiagramElement ChangedElement { get; set; }
+        public IDiagramElement ChangedElement { get; set; }
     }
 }

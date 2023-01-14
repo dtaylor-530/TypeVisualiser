@@ -1,4 +1,4 @@
-﻿namespace TypeVisualiser.Model
+﻿namespace TypeVisualiser.Models.Abstractions
 {
     /// <summary>
     /// This is a temporary hack to be able to tell the view controller to execute commands.

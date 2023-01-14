@@ -11,13 +11,16 @@ using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using StructureMap;
+using TypeVisualiser.Abstractions;
 using TypeVisualiser.Messaging;
 using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
+using TypeVisualiser.Models.Abstractions;
 using TypeVisualiser.RecentFiles;
-using TypeVisualiser.Startup;
 using TypeVisualiser.UI.WpfUtilities;
 using TypeVisualiser.ViewModels;
 
@@ -40,6 +43,7 @@ namespace TypeVisualiser.UI
         private const int LoadingProgressMaximum = 29;
         private readonly IContainer factory;
         private readonly IFileManager fileManager;
+        private readonly Abstractions.IMessenger messenger;
         private bool connectorTypeDirect;
         private bool connectorTypeSnap;
         private Diagram currentView;
@@ -51,9 +55,11 @@ namespace TypeVisualiser.UI
         private List<string> queuedEvents = new List<string>();
         private string title;
 
-        public ShellController() : this(IoC.Default)
-        {
-        }
+        public event Action DeleteFile;
+
+        //public ShellController() : this(IoC.Default)
+        //{
+        //}
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors",
             Justification = "Reviewed and acceptable here, VerifyPropertyName and RaisePropertyChanged are not going to create unwanted side affects")]
@@ -66,10 +72,12 @@ namespace TypeVisualiser.UI
                 throw new ArgumentNullResourceException("factory", "Resources.General_Given_Parameter_Cannot_Be_Null");
                 //throw new ArgumentNullResourceException("factory", Resources.General_Given_Parameter_Cannot_Be_Null);
             }
-
-            MessagingGate.Register(this, new Action<ChooseAssemblyMessage>(x => ChooseAssemblyExecute()));
-            MessagingGate.Register(this, new Action<ShutdownMessage>(x => Cleanup()));
-            MessagingGate.Register(this, new Action<NavigateToDiagramAssociationMessage>(OnNavigateToDiagramAssociation));
+            messenger = factory.GetInstance<Abstractions.IMessenger>();
+            messenger.Register(this, new Action<ChooseAssemblyMessage>(x => ChooseAssemblyExecute()));
+            messenger.Register(this, new Action<ShutdownMessage>(x => Cleanup()));
+            messenger.Register<NavigateToDiagramAssociationMessage>(this, OnNavigateToDiagramAssociation);
+            //messenger.Register(this, OnNavigateToDiagramAssociation);
+            messenger.Register<RecentFileDeleteMessage>(this, OnDeleteRecentlyUsedFile);
 
             this.factory = factory;
             ConnectorTypeDirect = true;
@@ -77,7 +85,12 @@ namespace TypeVisualiser.UI
             this.fileManager.Initialise();
             Current = this;
             OpenViews = new ObservableCollection<Diagram>();
-            OnLoadDemoTypeExecute();
+            //OnLoadDemoTypeExecute();
+        }
+
+        private void OnDeleteRecentlyUsedFile(RecentFileDeleteMessage obj)
+        {
+            DeleteFile.Invoke();
         }
 
         public static ShellController Current { get; private set; }
@@ -351,7 +364,7 @@ namespace TypeVisualiser.UI
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not possible to wrap into a using block. Is disposed by OnTabCloseExecute")]
         protected virtual Diagram CreateDiagram()
         {
-            return new Diagram(new ViewportController(this.factory));
+            return new Diagram(messenger, new ViewportController(this.factory));
         }
 
         public override void RaisePropertyChanged(string propertyName)
@@ -396,7 +409,8 @@ namespace TypeVisualiser.UI
             if (task.IsCompleted)
             {
                 OnTypeFinishedLoading(task.Result);
-            } else
+            }
+            else
             {
                 task.ContinueWith(finishedTask => OnTypeFinishedLoading(finishedTask.Result));
             }
@@ -542,7 +556,8 @@ namespace TypeVisualiser.UI
             if (task.IsCompleted)
             {
                 OnTypeFinishedLoadingFromFile(task.Result);
-            } else
+            }
+            else
             {
                 task.ContinueWith(finishedTask => OnTypeFinishedLoadingFromFile(finishedTask.Result));
             }
@@ -565,7 +580,8 @@ namespace TypeVisualiser.UI
             if (task.IsCompleted)
             {
                 OnTypeFinishedLoading(task.Result);
-            } else
+            }
+            else
             {
                 task.ContinueWith(finishedTask => OnTypeFinishedLoading(finishedTask.Result));
             }
@@ -585,7 +601,8 @@ namespace TypeVisualiser.UI
             if (task.IsCompleted)
             {
                 OnTypeFinishedLoading(task.Result);
-            } else
+            }
+            else
             {
                 task.ContinueWith(finishedTask => OnTypeFinishedLoading(finishedTask.Result));
             }
@@ -696,7 +713,8 @@ namespace TypeVisualiser.UI
                 this.progressTimer = new System.Timers.Timer(500);
                 this.progressTimer.Elapsed += UpdateLoadingProgress;
                 this.progressTimer.Start();
-            } else
+            }
+            else
             {
                 if (this.progressTimer == null)
                 {

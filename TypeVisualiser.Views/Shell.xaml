@@ -3,9 +3,9 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:UI="clr-namespace:TypeVisualiser.UI;assembly=TypeVisualiser.ViewModels"
                           xmlns:Views="clr-namespace:TypeVisualiser.UI.Views"
-                          xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities"
+                          xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models"
-                          Icon="../Assets/MainIcon.png"
+                          Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
                           GlassThickness="4,55,19,45"
                           Background="Transparent"
                           Title="{Binding Title}">
@@ -18,9 +18,9 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <UI:ShellController />
-    </Window.DataContext>
+    </Window.DataContext>-->
     
     <Window.InputBindings>
         <KeyBinding Key="D"
@@ -46,9 +46,9 @@
                         DockPanel.Dock="Top" />
 
         <Grid>
-            <!-- Standard Ms TabControl implementation. This ony has one instance of content datatemplate and refreshes data binding each time. -->
-            <!-- Doesn't work in this scenario because refreshing the bindings causes large numbers of objects to be redrawn and its very slow. -->
-            <!-- This is a custom implementation of a tab control that does not clear its visual children on tab change. Visual controls are hosted in a listbox. -->
+             <!--Standard Ms TabControl implementation. This ony has one instance of content datatemplate and refreshes data binding each time. 
+             Doesn't work in this scenario because refreshing the bindings causes large numbers of objects to be redrawn and its very slow. 
+             This is a custom implementation of a tab control that does not clear its visual children on tab change. Visual controls are hosted in a listbox.--> 
             <Views:CachedTabControl IsSynchronizedWithCurrentItem="True"
                                     Background="{StaticResource MenuBackgroundBrush}"
                                     ItemsSource="{Binding OpenViews}"
@@ -66,7 +66,7 @@
                             <Grid DockPanel.Dock="Bottom"
                                   x:Name="PART_ItemsHolder" />
                         </DockPanel>
-                        <!-- no content presenter -->
+                         <!--no content presenter--> 
                     </ControlTemplate>
                 </Views:CachedTabControl.Template>
                 <Views:CachedTabControl.ItemTemplate>

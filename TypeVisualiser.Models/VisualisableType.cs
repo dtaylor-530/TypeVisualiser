@@ -13,7 +13,7 @@ namespace TypeVisualiser.Model
 
     using TypeVisualiser.ILAnalyser;
     using TypeVisualiser.Model.Persistence;
-    using TypeVisualiser.Startup;
+    
 
     using IContainer = StructureMap.IContainer;
 
@@ -25,13 +25,17 @@ namespace TypeVisualiser.Model
         // private static readonly TaskScheduler BackgroundLimitedScheduler = null;
         private IContainer doNotUseFactory;
 
-        public VisualisableType(Type type)
-            : this(type, new VisualisableTypeData(), SubjectOrAssociate.Associate)
+        public VisualisableType(IContainer container, Type type)
+            : this(container, type, new VisualisableTypeData(), SubjectOrAssociate.Associate)
         {
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed here with no consequences")]
-        protected VisualisableType(IContainer factory, Type type, VisualisableTypeData data, SubjectOrAssociate subjectOrAssociate)
+        protected VisualisableType(
+            IContainer factory,
+            Type type, 
+            VisualisableTypeData data, 
+            SubjectOrAssociate subjectOrAssociate)
         {
             if (type == null)
             {
@@ -59,11 +63,6 @@ namespace TypeVisualiser.Model
             this.SetToolTip(type);
             this.SetAssociations(type);
             this.SetLinesOfCodeAndStaticAssociations(type);
-        }
-
-        protected VisualisableType(Type type, VisualisableTypeData data, SubjectOrAssociate subjectOrAssociate)
-            : this(IoC.Default, type, data, subjectOrAssociate)
-        {
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -317,7 +316,7 @@ namespace TypeVisualiser.Model
         {
             get
             {
-                return this.doNotUseFactory ?? (this.doNotUseFactory = IoC.Default);
+                return this.doNotUseFactory ?? (this.doNotUseFactory);
             }
         }
 

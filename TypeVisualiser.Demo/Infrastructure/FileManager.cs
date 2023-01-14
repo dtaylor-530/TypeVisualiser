@@ -1,6 +1,7 @@
 ﻿namespace TypeVisualiser
 {
     using System;
+    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Reflection;
@@ -14,14 +15,14 @@
     using TypeVisualiser.Messaging;
     using TypeVisualiser.Model;
     using TypeVisualiser.Model.Persistence;
+    using TypeVisualiser.Models.Abstractions;
     using TypeVisualiser.RecentFiles;
     using TypeVisualiser.Startup;
 
     public class FileManager : IFileManager
     {
         private readonly IMessenger messenger;
-
-        private IContainer doNotUseFactory;
+        private readonly StructureMap.IContainer container;
 
         private IModelBuilder doNotUseModelBuilder;
 
@@ -46,24 +47,17 @@
         private Func<IUserPromptSaveFile> userPromptSaveFileFactory = () => new WindowsSaveDialog { AddExtension = true, DefaultExt = "tvd", Filter = "Type Visualiser Diagram (*.tvd)|*.tvd" };
 
         // ReSharper restore FieldCanBeMadeReadOnly.Local
-        public FileManager(IMessenger messenger)
+        public FileManager(IMessenger messenger, StructureMap.IContainer container)
         {
             this.messenger = messenger;
+            this.container = container;
         }
 
         public virtual IRecentFiles RecentFiles
         {
             get
             {
-                return this.doNotUseRecentFiles ?? (this.doNotUseRecentFiles = this.Factory.GetInstance<IRecentFiles>());
-            }
-        }
-
-        protected virtual IContainer Factory
-        {
-            get
-            {
-                return this.doNotUseFactory ?? (this.doNotUseFactory = IoC.Default);
+                return this.doNotUseRecentFiles ?? (this.doNotUseRecentFiles = this.container.GetInstance<IRecentFiles>());
             }
         }
 
@@ -71,7 +65,7 @@
         {
             get
             {
-                return this.doNotUseModelBuilder ?? (this.doNotUseModelBuilder = this.Factory.GetInstance<IModelBuilder>());
+                return this.doNotUseModelBuilder ?? (this.doNotUseModelBuilder = this.container.GetInstance<IModelBuilder>());
             }
         }
 
@@ -225,7 +219,7 @@
             this.RecentFiles.SetCurrentType(type.AssemblyQualifiedName);
             this.RecentFiles.SaveRecentFile();
 
-            return Task.Factory.StartNew(() => new ModelBuilder().BuildSubject(type, 0), TaskCreationOptions.LongRunning);
+            return Task.Factory.StartNew(() => new ModelBuilder(container).BuildSubject(type, 0), TaskCreationOptions.LongRunning);
         }
 
         public Task<IVisualisableTypeWithAssociations> LoadTypeAsync(Type type)
@@ -237,7 +231,7 @@
 
             this.RecentFiles.SetCurrentType(type.AssemblyQualifiedName);
             this.RecentFiles.SaveRecentFile();
-            return Task.Factory.StartNew(() => new ModelBuilder().BuildSubject(type, 0), TaskCreationOptions.LongRunning);
+            return Task.Factory.StartNew(() => new ModelBuilder(container).BuildSubject(type, 0), TaskCreationOptions.LongRunning);
         }
 
         public IVisualisableTypeWithAssociations RefreshSubject(Type subjectType)

@@ -7,6 +7,7 @@ namespace TypeVisualiser.Model
     using TypeVisualiser.Geometry;
     using TypeVisualiser.Library;
     using TypeVisualiser.Model.Persistence;
+    using TypeVisualiser.Models.Abstractions;
 
     [Persistent]
     public abstract class Association : ICalculatedPositionDiagramContent

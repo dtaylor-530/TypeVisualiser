@@ -33,7 +33,13 @@ namespace TypeVisualiser.UI.Views
         public ShellTabControl()
         {
             InitializeComponent();
-            MessagingGate.Register<CloseDiagramMessage>(this, OnCloseDiagram);
+            this.Loaded += ShellTabControl_Loaded;
+            //MessagingGate.Register<CloseDiagramMessage>(this, OnCloseDiagram);
+        }
+
+        private void ShellTabControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Diagram.Closed += OnCloseDiagram;
         }
 
         private ViewportController Controller
@@ -158,14 +164,10 @@ namespace TypeVisualiser.UI.Views
         /// Called when explicitly closed by the user.
         /// </summary>
         /// <param name="message">The message.</param>
-        private void OnCloseDiagram(CloseDiagramMessage message)
+        private void OnCloseDiagram()
         {
-            if (message.DiagramId != Diagram.Id)
-            {
-                return;
-            }
 
-            MessagingGate.Unregister<CloseDiagramMessage>(this);
+            Diagram.Closed -= OnCloseDiagram;
             //MessagingGate.Unregister<NotifyNewDiagramDisplayedMessage>(this);
             DataContext = null;
         }
@@ -400,7 +402,7 @@ namespace TypeVisualiser.UI.Views
 
         private void OnUnloaded(object sender, EventArgs e)
         {
-            MessagingGate.Unregister<CloseDiagramMessage>(this);
+            //MessagingGate.Unregister<CloseDiagramMessage>(this);
             if (Controller != null)
             {
                 Controller.ExpandCanvasRequested -= OnExpandCanvasRequested;

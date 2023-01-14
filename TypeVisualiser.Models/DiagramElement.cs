@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using GalaSoft.MvvmLight;
+using TypeVisualiser.Abstractions;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Library;
 using TypeVisualiser.Messaging;
@@ -19,6 +20,7 @@ namespace TypeVisualiser.Model
     public class DiagramElement : INotifyPropertyChanged, ICleanup, IDiagramElement
     {
         private readonly Guid diagramId;
+        private readonly IMessenger messenger;
         private bool clean;
         private IDiagramContentFunctionality doNotUseDiagramContent;
 
@@ -31,7 +33,7 @@ namespace TypeVisualiser.Model
         private bool show;
         private Point topLeft;
 
-        public DiagramElement(Guid diagramId, IDiagramContentFunctionality diagramContent)
+        public DiagramElement(Guid diagramId, IDiagramContentFunctionality diagramContent, IMessenger messenger)
         {
             if (diagramContent == null)
             {
@@ -42,10 +44,11 @@ namespace TypeVisualiser.Model
             RelatedDiagramElements = new List<DiagramElement>();
             this.diagramId = diagramId;
             DiagramContent = diagramContent;
+            this.messenger = messenger;
             ZOrder = 1;
             Show = true;
             IsVisibleAdditionalLogic = (_, show) => show; // By default no additional logic when determining if something should be visible. Just return what you're given.
-            MessagingGate.Register<DiagramElementChangedMessage>(this, OnParentPositionChanged);
+            messenger.Register<DiagramElementChangedMessage>(this, OnParentPositionChanged);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -161,7 +164,7 @@ namespace TypeVisualiser.Model
 
         private void OnParentPositionChanged(DiagramElementChangedMessage message)
         {
-            DiagramElement parentElement = message.ChangedElement;
+            IDiagramElement parentElement = message.ChangedElement;
             // Is this message to do with my diagram?
             if (this.diagramId != message.DiagramId || parentElement == null)
             {

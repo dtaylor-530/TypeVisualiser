@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using TypeVisualiser.Geometry;
+using TypeVisualiser.Models.Abstractions;
 
 namespace TypeVisualiser.Model
 {

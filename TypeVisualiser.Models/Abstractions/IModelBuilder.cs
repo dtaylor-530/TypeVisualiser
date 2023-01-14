@@ -1,4 +1,6 @@
-namespace TypeVisualiser.Model
+using TypeVisualiser.Model;
+
+namespace TypeVisualiser.Models.Abstractions
 {
     using System;
     using System.Reflection;

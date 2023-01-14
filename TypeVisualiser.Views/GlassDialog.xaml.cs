@@ -28,7 +28,7 @@ namespace TypeVisualiser.UI.Views
             DialogTitle = title;
             Message = RationaliseMessage(message);
             DefaultButtonCaption = "Close";
-            ImageSource = "../Assets/MainIcon.png";
+            ImageSource = "/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png";
             HeadingCaption = headingCaption;
             ShowDialog();
         }

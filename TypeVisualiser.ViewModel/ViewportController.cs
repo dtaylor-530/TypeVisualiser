@@ -9,7 +9,7 @@ using StructureMap;
 using TypeVisualiser.Messaging;
 using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
-using TypeVisualiser.Startup;
+using TypeVisualiser.Models.Abstractions;
 using TypeVisualiser.UI.WpfUtilities;
 using TypeVisualiser.ViewModels;
 
@@ -111,7 +111,7 @@ namespace TypeVisualiser.UI
 
         protected IContainer Factory
         {
-            get { return this.doNotUseFactory ?? (this.doNotUseFactory = IoC.Default); }
+            get { return this.doNotUseFactory; }
         }
 
         private static bool IsLoading
@@ -192,7 +192,7 @@ namespace TypeVisualiser.UI
                 return;
             }
 
-            var diagramElement = new DiagramElement(DiagramId, annotation) { TopLeft = where };
+            var diagramElement = new DiagramElement(DiagramId, annotation, doNotUseFactory.GetInstance<Abstractions.IMessenger>()) { TopLeft = where };
             DiagramElements.Add(diagramElement);
         }
 
@@ -224,7 +224,7 @@ namespace TypeVisualiser.UI
             Subject = subject;
             Subject.DiscoverSecondaryAssociationsInModel(); // This enables lines on the diagram other than those involving the subject.
             DiagramElements.Clear();
-            this.drawingEngine = new ClassUmlDrawingEngine(DiagramId, subject);
+            this.drawingEngine = new ClassUmlDrawingEngine(doNotUseFactory, DiagramId, subject);
             foreach (DiagramElement element in this.drawingEngine.DrawAllBoxes())
             {
                 DiagramElements.Add(element);
@@ -341,7 +341,7 @@ namespace TypeVisualiser.UI
                 if (layoutData.ContentType == typeof(AnnotationData).FullName)
                 {
                     var annotation = new AnnotationData { Id = layoutData.Id, Text = layoutData.Data, };
-                    var annotationElement = new DiagramElement(DiagramId, annotation) { Show = layoutData.Visible, TopLeft = layoutData.TopLeft };
+                    var annotationElement = new DiagramElement(DiagramId, annotation, doNotUseFactory.GetInstance<Abstractions.IMessenger>()) { Show = layoutData.Visible, TopLeft = layoutData.TopLeft };
                     DiagramElements.Add(annotationElement);
                     continue;
                 }

@@ -4,6 +4,7 @@
     using System.Windows;
 
     using TypeVisualiser.Geometry;
+    using TypeVisualiser.Models.Abstractions;
 
     /// <summary>
     /// A connector builder implementation that creates connections in the most direct and shortest possible route.

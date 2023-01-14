@@ -3,9 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:Converters="clr-namespace:TypeVisualiser.UI.Converters"
-             xmlns:Assets="clr-namespace:TypeVisualiser.UI.Assets"
-             xmlns:Persistence="clr-namespace:TypeVisualiser.Model.Persistence" 
+             xmlns:Converters="clr-namespace:TypeVisualiser.UI.Converters;assembly=TypeVisualiser.WPF.Library"
+             xmlns:Assets="clr-namespace:TypeVisualiser.UI.Assets;assembly=TypeVisualiser.WPF.Library"
              xmlns:Persistence1="clr-namespace:TypeVisualiser.Model.Persistence;assembly=TypeVisualiser.Common"
              mc:Ignorable="d">
     <UserControl.Resources>
@@ -163,13 +162,13 @@
                         <StackPanel Orientation="Horizontal">
                             <Image Height="25"
                                    HorizontalAlignment="Left"
-                                   Source="../Assets/Internal.png"
+                                   Source="/TypeVisualiser.WPF.Library;component/Assets/Internal.png"
                                    ToolTip="Internal/Private"
                                    Visibility="{Binding Modifiers.Internal, Converter={StaticResource BoolToVisConverter}}"
                                    Width="25" />
                             <Image Height="25"
                                    HorizontalAlignment="Left"
-                                   Source="../Assets/Protected.png"
+                                   Source="/TypeVisualiser.WPF.Library;component/Assets/Protected.png"
                                    ToolTip="Protected"
                                    Visibility="{Binding Modifiers.Private, Converter={StaticResource BoolToVisConverter}}"
                                    Width="25" />
@@ -204,7 +203,7 @@
                     <Image Grid.Row="2"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/Constructor.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/Constructor.png"
                            ToolTip="Public Constructors"
                            Visibility="{Binding Modifiers.ShowConstructors, Converter={StaticResource BoolToVisConverter}}" />
                     <TextBlock Grid.Column="1"
@@ -214,7 +213,7 @@
                     <Image Grid.Row="3"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/Event.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/Event.png"
                            ToolTip="Public event count"
                            Visibility="{Binding EventCount, Converter={StaticResource CountToVisibilityConverter}}" />
                     <TextBlock Grid.Column="1"
@@ -224,7 +223,7 @@
                     <Image Grid.Row="4"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/Property.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/Property.png"
                            ToolTip="Public property count"
                            Visibility="{Binding PropertyCount, Converter={StaticResource CountToVisibilityConverter}}" />
                     <TextBlock Grid.Column="1"
@@ -234,7 +233,7 @@
                     <Image Grid.Row="5"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/Method.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/Method.png"
                            ToolTip="Public Method count"
                            Visibility="{Binding MethodCount, Converter={StaticResource CountToVisibilityConverter}}" />
                     <TextBlock Grid.Column="1"
@@ -244,7 +243,7 @@
                     <Image Grid.Row="5"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/PublicEnum.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/PublicEnum.png"
                            ToolTip="Enumeration member count">
                         <Image.Visibility>
                             <Binding Path="Modifiers.Kind"
@@ -270,7 +269,7 @@
                     <Image Grid.Row="6"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/Field.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/Field.png"
                            ToolTip="Field member count"
                            Visibility="{Binding FieldCount, Converter={StaticResource CountToVisibilityConverter}}" />
                     <TextBlock Grid.Column="1"
@@ -290,7 +289,7 @@
                            Grid.Column="2"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/TrivialDependencies.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/TrivialDependencies.png"
                            Visibility="{Binding SubjectOrAssociate, Converter={StaticResource SubjectOnlyVisibilityConverter}}"
                            ToolTip="Trivial dependencies" />
                     <TextBlock Grid.Column="3"
@@ -303,7 +302,7 @@
                            Visibility="{Binding SubjectOrAssociate, Converter={StaticResource SubjectOnlyVisibilityConverter}}"
                            HorizontalAlignment="Left"
                            Margin="2,1,1,1"
-                           Source="../Assets/NonTrivialDependencies.png"
+                           Source="/TypeVisualiser.WPF.Library;component/Assets/NonTrivialDependencies.png"
                            ToolTip="Nontrivial dependencies" />
                     <TextBlock Grid.Column="3"
                                Visibility="{Binding SubjectOrAssociate, Converter={StaticResource SubjectOnlyVisibilityConverter}}"

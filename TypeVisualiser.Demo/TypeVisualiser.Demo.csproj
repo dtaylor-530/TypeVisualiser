@@ -12,8 +12,7 @@
     <ProjectReference Include="..\TypeVisualiser.Demo.Types\TypeVisualiser.Demo.Types.csproj" />
     <ProjectReference Include="..\TypeVisualiser.Models.Persistence\TypeVisualiser.Models.Persistence.csproj" />
     <ProjectReference Include="..\TypeVisualiser.Models\TypeVisualiser.Models.csproj" />
-    <ProjectReference Include="..\TypeVisualiser.ViewModel\TypeVisualiser.ViewModels.csproj" />
-    <ProjectReference Include="..\TypeVisualiser.WPF.Library\TypeVisualiser.WPF.Library.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Views\TypeVisualiser.WPF.Views.csproj" />
   </ItemGroup>
 
 

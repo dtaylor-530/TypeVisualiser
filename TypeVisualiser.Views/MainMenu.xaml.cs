@@ -13,9 +13,22 @@ namespace TypeVisualiser.UI.Views
         public MainMenu()
         {
             InitializeComponent();
-            MessagingGate.Register<RecentFileDeleteMessage>(this, OnDeleteRecentlyUsedFile);
-            this.RecentlyUsedFiles.Loaded += OnRecentlyUsedFilesLoaded;
+            //MessagingGate.Register<RecentFileDeleteMessage>(this, OnDeleteRecentlyUsedFile);
+            this.Loaded += MainMenu_Loaded;
         }
+
+        private void MainMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            ShellController.DeleteFile += OnRecentlyUsedFilesLoaded;
+            this.RecentlyUsedFiles.Loaded += (s, e) => OnRecentlyUsedFilesLoaded();
+        }
+
+        private void ShellController_DeleteFile()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ShellController ShellController => this.DataContext as ShellController;
 
         private void OnDeleteRecentlyUsedFile(RecentFileDeleteMessage message)
         {
@@ -37,7 +50,7 @@ namespace TypeVisualiser.UI.Views
             }
         }
 
-        private void OnRecentlyUsedFilesLoaded(object sender, RoutedEventArgs e)
+        private void OnRecentlyUsedFilesLoaded()
         {
             this.RecentlyUsedFiles.Items.SortDescriptions.Add(new SortDescription("When", ListSortDirection.Descending));
         }

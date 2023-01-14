@@ -1,25 +1,27 @@
 ﻿namespace TypeVisualiser.Messaging
 {
     using System;
-    using GalaSoft.MvvmLight.Messaging;
+    using mbox = GalaSoft.MvvmLight.Messaging;
+    using TypeVisualiser.Abstractions;
+    using TypeVisualiser.Library;
 
-    public static class MessagingGate
+    public class MessagingGate : IMessenger
     {
         private static readonly object SyncRoot = new object();
 
-        public static void Register<T>(object recipient, Action<T> handler) where T : MessageBase
+        public void Register<T>(object recipient, Action<T> handler) where T : mbox.MessageBase
         {
             lock (SyncRoot)
             {
-                Messenger.Default.Register(recipient, handler);
+                mbox.Messenger.Default.Register(recipient, handler);
             }
         }
 
-        public static void Unregister<T>(object recipient) where T : MessageBase
+        public void Unregister<T>(object recipient) where T : mbox.MessageBase
         {
             lock (SyncRoot)
             {
-                Messenger.Default.Unregister<T>(recipient);
+                mbox.Messenger.Default.Unregister<T>(recipient);
             }
         }
 
@@ -33,7 +35,7 @@
         {
             lock (SyncRoot)
             {
-                Messenger.Default.Send(message);
+                mbox.Messenger.Default.Send(message);
             }
         }
     }

@@ -3,7 +3,6 @@
     using System;
     using System.Globalization;
     using Messaging;
-    //using Properties;
 
     internal class GlassMessageBox : MessageBoxBase
     {

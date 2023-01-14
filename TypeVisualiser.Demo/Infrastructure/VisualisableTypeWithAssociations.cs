@@ -41,14 +41,14 @@ namespace TypeVisualiser.Model
 
         private AssociationLoadStatus loadStatus = AssociationLoadStatus.ConstructedOnly;
 
-        public VisualisableTypeWithAssociations(Type type)
-            : this(type, 0)
+        public VisualisableTypeWithAssociations(IContainer container, Type type)
+            : this(container, type, 0)
         {
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed, ok here")]
-        public VisualisableTypeWithAssociations(Type type, int depth)
-            : base(type, new VisualisableTypeSubjectData(), depth == 0 ? SubjectOrAssociate.Subject : SubjectOrAssociate.Associate)
+        public VisualisableTypeWithAssociations(IContainer container, Type type, int depth)
+            : base(container, type, new VisualisableTypeSubjectData(), depth == 0 ? SubjectOrAssociate.Subject : SubjectOrAssociate.Associate)
         {
             this.ConstructorSharedLogic(type, depth);
         }

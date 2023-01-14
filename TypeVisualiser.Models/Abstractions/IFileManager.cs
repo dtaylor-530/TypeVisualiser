@@ -6,7 +6,7 @@ using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
 using TypeVisualiser.RecentFiles;
 
-namespace TypeVisualiser
+namespace TypeVisualiser.Models.Abstractions
 {
     public interface IFileManager
     {
@@ -18,7 +18,7 @@ namespace TypeVisualiser
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Justification = "Multi-CLR Language not needed")]
         Assembly LoadAssembly(string assemblyFileName = "");
 
-        IVisualisableTypeWithAssociations  LoadDemoType();
+        IVisualisableTypeWithAssociations LoadDemoType();
         ITypeVisualiserLayoutFile LoadDiagram();
         Task<IVisualisableTypeWithAssociations> LoadFromDiagramFileAsync(ITypeVisualiserLayoutFile layout);
         Task<IVisualisableTypeWithAssociations> LoadFromRecentFileAsync(RecentFile recentFileData);

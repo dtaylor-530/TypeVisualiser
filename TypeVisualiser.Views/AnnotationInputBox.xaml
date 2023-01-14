@@ -1,6 +1,6 @@
 ﻿<WpfUtilities:GlassWindow x:Class="TypeVisualiser.UI.Views.AnnotationInputBox"
                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                          xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities"
+                          xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           Background="Transparent"
                           GlassThickness="200"

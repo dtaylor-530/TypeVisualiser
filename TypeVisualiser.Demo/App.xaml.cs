@@ -7,9 +7,11 @@
     using GalaSoft.MvvmLight.Messaging;
     using StructureMap;
     using TypeVisualiser.Demo;
+    using TypeVisualiser.Demo.Infrastructure;
     using TypeVisualiser.ILAnalyser;
     using TypeVisualiser.Messaging;
     using TypeVisualiser.Model;
+    using TypeVisualiser.Models.Abstractions;
     using TypeVisualiser.RecentFiles;
     using TypeVisualiser.Startup;
     using TypeVisualiser.UI;
@@ -30,7 +32,9 @@
             Current.Exit += this.OnApplicationExit;
             IoC.MapHardcodedRegistrations(Intialise());
 
-            new UI.Views.Shell().Show();
+            var shell = new UI.Views.Shell();
+            shell.DataContext = IoC.Default.GetInstance<ShellController>();
+            shell.Show();
         }
 
         private static void LogUnhandledException(string origin, object ex)
@@ -84,6 +88,9 @@
                         config.For<IVisualisableType>().Use<VisualisableType>();
                         config.For<IVisualisableTypeWithAssociations>().Use<VisualisableTypeWithAssociations>();
                         config.For<IShowDialog>().Use<ShowDialog>();
+                        config.For<Abstractions.IMessenger>().Singleton().Use<MessagingGate>();
+                        config.For<IUserPromptMessage>().Singleton().Use<WindowsMessageBox>();
+                        config.For<IXamlService>().Singleton().Use<XamlService>();
                     });
         }
     }

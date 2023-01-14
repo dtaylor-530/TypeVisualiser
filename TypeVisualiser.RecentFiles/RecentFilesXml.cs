@@ -5,21 +5,27 @@ namespace TypeVisualiser.RecentFiles
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
-    using System.Xaml;
+    //using System.Xaml;
     using Messaging;
+    using TypeVisualiser.Abstractions;
 
     public class RecentFilesXml : IRecentFiles
     {
         private const string FileName = "TypeVisualiserRecentFiles.xml";
-        private readonly IUserPromptMessage userPrompt = new WindowsMessageBox();
+        private readonly IUserPromptMessage userPrompt;
+
+        //private readonly IUserPromptMessage userPrompt = new WindowsMessageBox();
         private string currentType;
         private string doNotUseFullFileName;
         private DateTime when;
+        private IXamlService xamlService;
 
-        public RecentFilesXml()
+        public RecentFilesXml(IMessenger messenger, IUserPromptMessage userPromptMessage, IXamlService xamlService)
         {
             RecentlyUsedFiles = new ObservableCollection<RecentFile>();
-            MessagingGate.Register<RecentFileDeleteMessage>(this, OnRemoveRecentlyUsedFileRequested);
+            messenger.Register<RecentFileDeleteMessage>(this, OnRemoveRecentlyUsedFileRequested);
+            this.userPrompt = userPromptMessage;
+            this.xamlService = xamlService;
         }
 
         private string AssemblyFileName { get; set; }
@@ -54,7 +60,7 @@ namespace TypeVisualiser.RecentFiles
 
             try
             {
-                object serialised = XamlServices.Load(FullFileName);
+                object serialised = xamlService.Load(FullFileName);
                 var correctFormat = serialised as List<RecentFile>;
                 if (correctFormat == null)
                 {
@@ -63,7 +69,8 @@ namespace TypeVisualiser.RecentFiles
                 }
 
                 RecentlyUsedFiles = new ObservableCollection<RecentFile>(correctFormat.OrderByDescending(x => x.When).Take(20));
-            } catch (IOException ex)
+            }
+            catch (IOException ex)
             {
                 this.userPrompt.Show(ex, "Resources.RecentFilesXml_UnableToLoadRecentFiles");
                 //this.userPrompt.Show(ex, Resources.RecentFilesXml_UnableToLoadRecentFiles);
@@ -88,11 +95,12 @@ namespace TypeVisualiser.RecentFiles
             RecentlyUsedFiles.Insert(0, newRecentFile);
 
             // Save to xml file
-            string serialised = XamlServices.Save(RecentlyUsedFiles.ToList());
+            string serialised = xamlService.Save(RecentlyUsedFiles.ToList());
             try
             {
                 File.WriteAllText(FullFileName, serialised);
-            } catch (IOException ex)
+            }
+            catch (IOException ex)
             {
                 //this.userPrompt.Show(ex, Resources.RecentFilesXml_SaveRecentFile);
                 this.userPrompt.Show(ex, "Resources.RecentFilesXml_SaveRecentFile");

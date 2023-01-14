@@ -1,4 +1,4 @@
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.Models.Abstractions
 {
     /// <summary>
     /// An interface for diagram dimension data for the whole diagram. This data is mostly layout data.

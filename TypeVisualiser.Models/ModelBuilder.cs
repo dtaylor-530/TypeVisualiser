@@ -9,7 +9,8 @@ using StructureMap;
 using StructureMap.Pipeline;
 
 using TypeVisualiser.Messaging;
-using TypeVisualiser.Startup;
+using TypeVisualiser.Models.Abstractions;
+//using TypeVisualiser.Startup;
 
 namespace TypeVisualiser.Model
 {
@@ -25,12 +26,8 @@ namespace TypeVisualiser.Model
 
         private IUserPromptMessage userPrompt = new WindowsMessageBox();
 
-        public ModelBuilder()
-        {
-        }
 
         public ModelBuilder(IContainer factory)
-            : this()
         {
             this.doNotUseFactory = factory;
         }
@@ -39,7 +36,7 @@ namespace TypeVisualiser.Model
         {
             get
             {
-                return this.doNotUseFactory ?? (this.doNotUseFactory = IoC.Default);
+                return this.doNotUseFactory;
             }
         }
 

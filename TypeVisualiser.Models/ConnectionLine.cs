@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Library;
+using TypeVisualiser.Models.Abstractions;
 
 namespace TypeVisualiser.Model
 {

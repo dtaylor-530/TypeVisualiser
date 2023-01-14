@@ -2,7 +2,6 @@ namespace TypeVisualiser.Messaging
 {
     using GalaSoft.MvvmLight.Messaging;
     using RecentFiles;
-    using TypeVisualiser.RecentFiles;
 
     public class RecentFileDeleteMessage : MessageBase
     {

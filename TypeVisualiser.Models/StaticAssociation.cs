@@ -4,6 +4,7 @@ namespace TypeVisualiser.Model
     using System.Collections.Generic;
 
     using TypeVisualiser.Model.Persistence;
+    using TypeVisualiser.Models.Abstractions;
 
     public class StaticAssociation : ConsumeAssociation
     {

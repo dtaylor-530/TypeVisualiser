@@ -1,7 +1,8 @@
 using System;
 using TypeVisualiser.Geometry;
+using TypeVisualiser.Model;
 
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.Models.Abstractions
 {
     public interface ICalculatedPositionDiagramContent : IDiagramContentFunctionality
     {

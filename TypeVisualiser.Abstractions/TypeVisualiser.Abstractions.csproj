@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TypeVisualiser.Common\TypeVisualiser.Common.csproj" />
+	  <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
   </ItemGroup>
 
 </Project>

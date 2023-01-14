@@ -1,7 +1,8 @@
 ﻿using System;
 using TypeVisualiser.Geometry;
+using TypeVisualiser.Model;
 
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.Models.Abstractions
 {
     /// <summary>
     /// An interface to encapsulate obtaining the best connection line from area to area.

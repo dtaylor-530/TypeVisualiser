@@ -10,6 +10,7 @@ namespace TypeVisualiser.Model
 
     using TypeVisualiser.Geometry;
     using TypeVisualiser.Model.Persistence;
+    using TypeVisualiser.Models.Abstractions;
 
     /// <summary>
     /// The field association.

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using TypeVisualiser.Models.Abstractions;
 
     public class DiagramDimensions : IDiagramDimensions
     {
