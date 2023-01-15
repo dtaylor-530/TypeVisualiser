@@ -93,6 +93,7 @@
                         //config.For<IMessenger>().Use(Messenger.Default);
                         config.For<IMethodBodyReader>().Use<MethodBodyReader>();
                         config.For<IModelBuilder>().Singleton().Use<ModelBuilder>();
+                        config.For<ITypeBuilder>().Singleton().Use<TypeBuilder>();
                         config.For<IRecentFiles>().Singleton().Use<RecentFilesXml>();
                         config.For<ITrivialFilter>().Singleton().Use<TrivialFilter>();
                         config.For<ILineHeadFactory>().Singleton().Use<LineHeadFactory>();
