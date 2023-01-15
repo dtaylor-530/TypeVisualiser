@@ -19,7 +19,7 @@
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Converters1:MemberKindToImageConverter x:Key="MemberKindToImageConverter" />

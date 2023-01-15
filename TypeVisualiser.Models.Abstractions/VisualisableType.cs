@@ -1,5 +1,6 @@
 namespace TypeVisualiser.Model
 {
+    using MassTransit.Util;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace TypeVisualiser.Model
 
     using TypeVisualiser.ILAnalyser;
     using TypeVisualiser.Model.Persistence;
-    
+
 
     using IContainer = StructureMap.IContainer;
 
@@ -33,8 +34,8 @@ namespace TypeVisualiser.Model
         [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "Reviewed here with no consequences")]
         protected VisualisableType(
             IContainer factory,
-            Type type, 
-            VisualisableTypeData data, 
+            Type type,
+            VisualisableTypeData data,
             SubjectOrAssociate subjectOrAssociate)
         {
             if (type == null)
@@ -62,7 +63,11 @@ namespace TypeVisualiser.Model
 
             this.SetToolTip(type);
             this.SetAssociations(type);
-            this.SetLinesOfCodeAndStaticAssociations(type);
+
+        
+            if (false)
+                // warning slow operation!!!
+                this.SetLinesOfCodeAndStaticAssociations(type);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -515,8 +520,8 @@ namespace TypeVisualiser.Model
             this.EventCount = (from e in type.GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly) select e).Count();
 
             IEnumerable<FieldInfo> fields = from f in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
-                                             where !(f.Name.Contains("__BackingField") || typeof(EventHandler).IsAssignableFrom(f.FieldType))
-                                             select f;
+                                            where !(f.Name.Contains("__BackingField") || typeof(EventHandler).IsAssignableFrom(f.FieldType))
+                                            select f;
             this.FieldCount = fields.Count();
         }
 

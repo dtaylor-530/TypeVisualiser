@@ -8,17 +8,20 @@
                           xmlns:Converters1="clr-namespace:TypeVisualiser.UI.Converters;assembly=TypeVisualiser.WPF.Library"
                           Background="Transparent"
                           GlassThickness="200"
-                          Icon="/TypeVisualiser.WPF.Views;component/Assets/MainIcon.png"
+                          xmlns:lib="clr-namespace:TypeVisualiser.UI.Views"
+                          Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
                           SizeToContent="WidthAndHeight"
                           MaxHeight="480"
                           MaxWidth="640"
                           MinHeight="200"
+                          d:DataContext="{d:DesignInstance lib:GlassDialog}"
                           MinWidth="400"
                           Title="{Binding DialogTitle}">
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/TextStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Converters1:NullToVisibilityConverter x:Key="NullToVisibility" />

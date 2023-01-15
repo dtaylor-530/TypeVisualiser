@@ -7,10 +7,12 @@ namespace TypeVisualiser.Model
     using System.Linq;
     using System.Text.RegularExpressions;
     using System.Windows;
-
+    using TypeVisualiser.Abstractions;
     using TypeVisualiser.Geometry;
+    using TypeVisualiser.Library;
     using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
+    using TypeVisualiser.WPF.Common;
 
     /// <summary>
     /// The field association.
@@ -25,6 +27,8 @@ namespace TypeVisualiser.Model
         private double angle;
 
         private IDiagramDimensions dimensions; // Need to set this in testing
+        private readonly ILineHeadFactory lineheadFactory;
+        private readonly IAssociationDataFactory associationDataFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldAssociation"/> class. 
@@ -42,10 +46,15 @@ namespace TypeVisualiser.Model
         /// <param name="diagramDimensions">
         /// The diagram Dimensions.
         /// </param>
-        public FieldAssociation(IApplicationResources resources, ITrivialFilter trivialFilter, IModelBuilder modelBuilder, IDiagramDimensions diagramDimensions)
+        public FieldAssociation(IApplicationResources resources, 
+            ITrivialFilter trivialFilter, IModelBuilder modelBuilder, IDiagramDimensions diagramDimensions,
+            ILineHeadFactory lineheadFactory,
+            IAssociationDataFactory associationDataFactory)
             : base(resources, trivialFilter)
         {
             this.dimensions = diagramDimensions;
+            this.lineheadFactory = lineheadFactory;
+            this.associationDataFactory = associationDataFactory;
             this.modelBuilder = modelBuilder;
         }
 
@@ -103,13 +112,8 @@ namespace TypeVisualiser.Model
         /// <summary>
         /// Gets the persistence type.
         /// </summary>
-        internal virtual Type PersistenceType
-        {
-            get
-            {
-                return typeof(FieldAssociationData);
-            }
-        }
+        internal virtual Type PersistenceType => associationDataFactory.GetType(this);
+
 
         /// <summary>
         /// Gets or sets the usage descriptor list.
@@ -246,7 +250,7 @@ namespace TypeVisualiser.Model
             return this.GetProposedAreaSemiCircle(actualWidth, actualHeight, subjectArea.Centre, overlapsWithOthers);
         }
 
-        internal static void StyleLineForNonParentAssociation(ConnectionLine line, int usageCount, IVisualisableType associatedTo, bool isTrivial)
+        internal static void StyleLineForNonParentAssociation(IConnectionLine line, int usageCount, IVisualisableType associatedTo, bool isTrivial)
         {
             if (line == null)
             {
@@ -276,20 +280,21 @@ namespace TypeVisualiser.Model
             }
         }
 
+  
         /// <summary>
         /// The create line head.
         /// </summary>
         /// <returns>
         /// The <see cref="ArrowHead"/>.
         /// </returns>
-        public override ArrowHead CreateLineHead()
+        public override IDiagramContentFunctionality  CreateLineHead()
         {
             if (!this.IsInitialised)
             {
                 CannotUseWithoutInitializationFirst();
             }
 
-            return new AssociationArrowHead();
+            return lineheadFactory.CreateLineHead(this);
         }
 
         /// <summary>
@@ -318,7 +323,7 @@ namespace TypeVisualiser.Model
         /// <param name="line">
         /// The line.
         /// </param>
-        public override void StyleLine(ConnectionLine line)
+        public override void StyleLine(IConnectionLine line)
         {
             if (!this.IsInitialised)
             {

@@ -6,6 +6,7 @@ using GalaSoft.MvvmLight.Messaging;
 using StructureMap;
 using TypeVisualiser.Abstractions;
 using TypeVisualiser.Geometry;
+using TypeVisualiser.Library;
 using TypeVisualiser.Model;
 using TypeVisualiser.Models.Abstractions;
 
@@ -18,37 +19,43 @@ namespace TypeVisualiser.UI
     {
         private readonly IContainer container;
         private readonly Abstractions.IMessenger messenger;
-        private ICollection<DiagramElement> allElements;
+        private readonly IDiagramElementFactory diagramElementFactory;
+        private readonly IConnectorBuilder connectorBuilder;
+        private ICollection<IDiagramElement> allElements;
 
         /// <summary>
         /// This holds a temporary list of diagram elements that have been moved to their final position on the diagram.
         /// Used by the <see cref="PositionAllOtherAssociations"/> method.
         /// </summary>
-        private List<DiagramElement> positionedElements;
+        private List<IDiagramElement> positionedElements;
 
-        private Func<DiagramElement, bool, bool> shouldSecondaryElementBeVisible;
+        private Func<IDiagramElement, bool, bool> shouldSecondaryElementBeVisible;
 
 
 
-        public ClassUmlDrawingEngine(IContainer container, Guid diagramId, IVisualisableTypeWithAssociations mainSubject)
+        public ClassUmlDrawingEngine(IContainer container,
+            Guid diagramId,
+            IVisualisableTypeWithAssociations mainSubject)
         {
             this.container = container;
             messenger = container.GetInstance<Abstractions.IMessenger>();
+            diagramElementFactory = container.GetInstance<IDiagramElementFactory>();
+            connectorBuilder = container.GetInstance<IConnectorBuilder>();
             DiagramId = diagramId;
             MainSubject = mainSubject;
             var subjectAssociation = container.GetInstance<SubjectAssociation>().Initialise(mainSubject);
-            MainDrawingSubject = new DiagramElement(DiagramId, subjectAssociation, messenger);
+            MainDrawingSubject = diagramElementFactory.Create(DiagramId, subjectAssociation, messenger);
         }
 
         public Guid DiagramId { get; private set; }
 
-        public DiagramElement MainDrawingSubject { get; private set; }
+        public IDiagramElement MainDrawingSubject { get; private set; }
 
         public IVisualisableTypeWithAssociations MainSubject { get; private set; }
 
-        public IEnumerable<DiagramElement> DrawAllBoxes()
+        public IEnumerable<IDiagramElement> DrawAllBoxes()
         {
-            var addedElements = new List<DiagramElement> { MainDrawingSubject };
+            var addedElements = new List<IDiagramElement> { MainDrawingSubject };
 
             AddDiagramElementForParentAssociation(MainSubject.Parent, addedElements);
             foreach (ParentAssociation @interface in MainSubject.ThisTypeImplements)
@@ -56,7 +63,7 @@ namespace TypeVisualiser.UI
                 AddDiagramElementForParentAssociation(@interface, addedElements);
             }
 
-            addedElements.AddRange(MainSubject.AllAssociations.Select(association => new DiagramElement(DiagramId, association, messenger)));
+            addedElements.AddRange(MainSubject.AllAssociations.Select(association => diagramElementFactory.Create(DiagramId, association, messenger)));
 
             return addedElements;
         }
@@ -68,20 +75,20 @@ namespace TypeVisualiser.UI
         /// <param name="shouldSecondaryElementBeVisibleDelegate">A delegate that determines if secondary associations are configured to be visible.</param>
         /// <param name="secondaryElements">An out param that returns the secondary associations so they can be shown/hidden independently of the main elements.</param>
         /// <returns>A collection of added elements that wrapping the lines that have been created.</returns>
-        public IEnumerable<DiagramElement> DrawConnectingLines(ICollection<DiagramElement> allDiagramElements,
-                                                               Func<DiagramElement, bool, bool> shouldSecondaryElementBeVisibleDelegate,
-                                                               out Dictionary<string, DiagramElement> secondaryElements)
+        public IEnumerable<IDiagramElement> DrawConnectingLines(ICollection<IDiagramElement> allDiagramElements,
+                                                               Func<IDiagramElement, bool, bool> shouldSecondaryElementBeVisibleDelegate,
+                                                               out Dictionary<string, IDiagramElement> secondaryElements)
         {
-            if (allDiagramElements.Any(x => x.DiagramContent is ConnectionLine))
+            if (allDiagramElements.Any(x => x.DiagramContent is IConnectionLine))
             {
                 throw new InvalidOperationException("Code error: Draw Association Lines cannot be called twice.");
             }
 
-            var addedElements = new List<DiagramElement>();
-            secondaryElements = new Dictionary<string, DiagramElement>();
+            var addedElements = new List<IDiagramElement>();
+            secondaryElements = new Dictionary<string, IDiagramElement>();
             this.allElements = allDiagramElements;
             this.shouldSecondaryElementBeVisible = shouldSecondaryElementBeVisibleDelegate;
-            foreach (DiagramElement associateElement in allDiagramElements.ToList()) // Loop through a copy of the collection. The loop will add new content to it.
+            foreach (IDiagramElement associateElement in allDiagramElements.ToList()) // Loop through a copy of the collection. The loop will add new content to it.
             {
                 if (associateElement.DiagramContent is SubjectAssociation)
                 {
@@ -96,17 +103,18 @@ namespace TypeVisualiser.UI
             return addedElements;
         }
 
-        public void PositionAllOtherAssociations(ICollection<DiagramElement> allDiagramElements)
+        public void PositionAllOtherAssociations(ICollection<IDiagramElement> allDiagramElements)
         {
-            this.positionedElements = new List<DiagramElement>();
+            this.positionedElements = new List<IDiagramElement>();
             Area subjectArea = MainDrawingSubject.Area;
             this.positionedElements.Add(MainDrawingSubject);
 
-            foreach (DiagramElement diagramElement in allDiagramElements)
+            foreach (IDiagramElement diagramElement in allDiagramElements)
             {
                 var calculatablePositionContent = diagramElement.DiagramContent as ICalculatedPositionDiagramContent;
                 if (calculatablePositionContent != null)
                 {
+                   
                     // Only certain diagram elements should have their position calculated. The rest follow suit with those that have had their position calculated.
                     Area area = calculatablePositionContent.ProposePosition(diagramElement.Width, diagramElement.Height, subjectArea, IsOverlappingWithOtherControls);
                     diagramElement.TopLeft = area.TopLeft;
@@ -122,14 +130,14 @@ namespace TypeVisualiser.UI
             MainDrawingSubject.CenterOnPoint(hostDiagram.Centre);
         }
 
-        private void AddDiagramElementForParentAssociation(ParentAssociation parent, IList<DiagramElement> addedElements)
+        private void AddDiagramElementForParentAssociation(ParentAssociation parent, IList<IDiagramElement> addedElements)
         {
             if (parent == null)
             {
                 return;
             }
 
-            addedElements.Add(new DiagramElement(DiagramId, parent, messenger));
+            addedElements.Add(diagramElementFactory.Create(DiagramId, parent, messenger));
 
             var parentType = parent.AssociatedTo as IVisualisableTypeWithAssociations;
             if (parentType != null)
@@ -149,9 +157,9 @@ namespace TypeVisualiser.UI
             }
         }
 
-        private void AppendToCollections(List<DiagramElement> addedElements, Dictionary<string, DiagramElement> secondaryElements, IEnumerable<DiagramElement> results)
+        private void AppendToCollections(List<IDiagramElement> addedElements, Dictionary<string, IDiagramElement> secondaryElements, IEnumerable<IDiagramElement> results)
         {
-            foreach (DiagramElement element in results)
+            foreach (IDiagramElement element in results)
             {
                 addedElements.Add(element);
                 secondaryElements.Add(element.DiagramContent.Id, element);
@@ -160,7 +168,7 @@ namespace TypeVisualiser.UI
         }
 
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "IDiagramContent", Justification = "Known context word")]
-        private void DrawLine(List<DiagramElement> addedElements, DiagramElement associateElement, Dictionary<string, DiagramElement> secondaryElements)
+        private void DrawLine(List<IDiagramElement> addedElements, IDiagramElement associateElement, Dictionary<string, IDiagramElement> secondaryElements)
         {
             var association = associateElement.DiagramContent as Association;
             if (association == null)
@@ -169,11 +177,11 @@ namespace TypeVisualiser.UI
             }
 
             // Draw the primary line from the diagram's subject to the association. This could also be a line from the subject's parent to a grandparent.
-            DiagramElement fromElement = GetSourceOfLine(association); // Sometimes returns the subject or a parent connecting to a grandparent.
+            IDiagramElement fromElement = GetSourceOfLine(association); // Sometimes returns the subject or a parent connecting to a grandparent.
             addedElements.AddRange(DrawLine(fromElement, associateElement, association));
 
             // Draw any lines from this diagram element to its associations that are included on the diagram.
-            IEnumerable<DiagramElement> results = DrawLineForSecondaryParent(associateElement, association);
+            IEnumerable<IDiagramElement> results = DrawLineForSecondaryParent(associateElement, association);
             AppendToCollections(addedElements, secondaryElements, results);
 
             results = DrawLineForSecondaryImplements(associateElement, association);
@@ -183,46 +191,48 @@ namespace TypeVisualiser.UI
             AppendToCollections(addedElements, secondaryElements, results);
         }
 
-        private IEnumerable<DiagramElement> DrawLine(DiagramElement fromElement, DiagramElement destinationElement, Association destinationAssociation)
+        private IEnumerable<IDiagramElement> DrawLine(IDiagramElement fromElement, IDiagramElement destinationElement, Association destinationAssociation)
         {
             Logger.Instance.WriteEntry("DrawLine for   {0}", destinationAssociation.AssociatedTo.Name);
             Logger.Instance.WriteEntry("    From Area: {0}", fromElement.Area);
             Logger.Instance.WriteEntry("    To Area  : {0}", destinationElement.Area);
 
-            ConnectionLine route = ConnectionLine.FindBestConnectionRoute(fromElement.Area, destinationElement.Area, IsOverlappingWithOtherControls);
+            IConnectionLine route = connectorBuilder.CalculateBestConnection(fromElement.Area, destinationElement.Area, IsOverlappingWithOtherControls);
             destinationAssociation.StyleLine(route);
-            var addedElements = new List<DiagramElement>();
-            Logger.Instance.WriteEntry("    Route calculated from {0:F1}, {1:F1}  to {2:F1}, {3:F1}", route.From.X, route.From.Y, route.To.X, route.To.Y);
-            Logger.Instance.WriteEntry("    From angle {0:F1} to angle {1:F1}", route.FromAngle, route.ToAngle);
+            var addedElements = new List<IDiagramElement>();
+            //Logger.Instance.WriteEntry("    Route calculated from {0:F1}, {1:F1}  to {2:F1}, {3:F1}", route.From.X, route.From.Y, route.To.X, route.To.Y);
+            //Logger.Instance.WriteEntry("    From angle {0:F1} to angle {1:F1}", route.FromAngle, route.ToAngle);
 
             // Create the line diagram element and add to the diagram collection.
             // The line is linked to the arrow head position.
-            var lineDiagramElement = new DiagramElement(DiagramId, route, messenger) { TopLeft = route.From };
+            var x = new DiagramElementConstruction() { TopLeft = route.From };
+            var lineDiagramElement = diagramElementFactory.Create(DiagramId, route, messenger, x);
             lineDiagramElement.RegisterPositionDependency(new[] { fromElement, destinationElement }, IsOverlappingWithOtherControls);
             addedElements.Add(lineDiagramElement);
 
             // Create an arrow head based on the best route and add to the diagram collection.
             // The arrow head is linked to the associate diagram element.
-            ArrowHead arrowHead = destinationAssociation.CreateLineHead();
-            var headDiagramElement = new DiagramElement(DiagramId, arrowHead, messenger) { TopLeft = route.To };
+            var arrowHead = destinationAssociation.CreateLineHead();
+            var y = new DiagramElementConstruction() { TopLeft = route.To };
+            var headDiagramElement = diagramElementFactory.Create(DiagramId, arrowHead, messenger, y);
             headDiagramElement.RegisterPositionDependency(new[] { lineDiagramElement }, IsOverlappingWithOtherControls);
             addedElements.Add(headDiagramElement);
 
-            return new[] { lineDiagramElement, headDiagramElement };
+            return new IDiagramElement[] { lineDiagramElement, headDiagramElement };
         }
 
-        private IEnumerable<DiagramElement> DrawLineForSecondaryAssociations(DiagramElement fromDiagramElement, Association association)
+        private IEnumerable<IDiagramElement> DrawLineForSecondaryAssociations(IDiagramElement fromDiagramElement, Association association)
         {
             var fullyExpandedModelType = association.AssociatedTo as IVisualisableTypeWithAssociations;
             if (fullyExpandedModelType == null || !fullyExpandedModelType.AllAssociations.Any())
             {
-                return new List<DiagramElement>();
+                return new List<IDiagramElement>();
             }
 
-            var addedElements = new List<DiagramElement>();
+            var addedElements = new List<IDiagramElement>();
             foreach (FieldAssociation fieldAssociation in fullyExpandedModelType.AllAssociations)
             {
-                DiagramElement destinationElement = FindDiagramElementFromContentId(fieldAssociation.Id);
+                IDiagramElement destinationElement = FindDiagramElementFromContentId(fieldAssociation.Id);
                 if (destinationElement == null)
                 {
                     continue;
@@ -235,18 +245,18 @@ namespace TypeVisualiser.UI
             return addedElements;
         }
 
-        private IEnumerable<DiagramElement> DrawLineForSecondaryImplements(DiagramElement fromDiagramElement, Association association)
+        private IEnumerable<IDiagramElement> DrawLineForSecondaryImplements(IDiagramElement fromDiagramElement, Association association)
         {
             var fullyExpandedModelType = association.AssociatedTo as IVisualisableTypeWithAssociations;
             if (fullyExpandedModelType == null || !fullyExpandedModelType.ThisTypeImplements.Any())
             {
-                return new List<DiagramElement>();
+                return new List<IDiagramElement>();
             }
 
-            var addedElements = new List<DiagramElement>();
+            var addedElements = new List<IDiagramElement>();
             foreach (ParentAssociation implement in fullyExpandedModelType.ThisTypeImplements)
             {
-                DiagramElement destinationElement = FindDiagramElementFromContentId(implement.Id);
+                IDiagramElement destinationElement = FindDiagramElementFromContentId(implement.Id);
                 if (destinationElement == null)
                 {
                     continue;
@@ -259,30 +269,30 @@ namespace TypeVisualiser.UI
             return addedElements;
         }
 
-        private IEnumerable<DiagramElement> DrawLineForSecondaryParent(DiagramElement fromDiagramElement, Association parentAssociation)
+        private IEnumerable<IDiagramElement> DrawLineForSecondaryParent(IDiagramElement fromDiagramElement, Association parentAssociation)
         {
             var fullyExpandedModelType = parentAssociation.AssociatedTo as IVisualisableTypeWithAssociations;
             if (fullyExpandedModelType == null || fullyExpandedModelType.Parent == null)
             {
-                return new List<DiagramElement>();
+                return new List<IDiagramElement>();
             }
 
-            DiagramElement destinationElement = FindDiagramElementFromContentId(fullyExpandedModelType.Parent.Id);
+            IDiagramElement destinationElement = FindDiagramElementFromContentId(fullyExpandedModelType.Parent.Id);
             if (destinationElement == null)
             {
-                return new List<DiagramElement>();
+                return new List<IDiagramElement>();
             }
 
             var destinationAssociation = destinationElement.DiagramContent as Association;
             return DrawLine(fromDiagramElement, destinationElement, destinationAssociation);
         }
 
-        private DiagramElement FindDiagramElementFromContentId(string id)
+        private IDiagramElement FindDiagramElementFromContentId(string id)
         {
             return this.allElements.FirstOrDefault(e => e.DiagramContent.Id == id && e.DiagramContent is Association);
         }
 
-        private DiagramElement GetSourceOfLine(Association association)
+        private IDiagramElement GetSourceOfLine(Association association)
         {
             var parentAssociation = association as ParentAssociation;
             if (parentAssociation == null)
@@ -290,7 +300,7 @@ namespace TypeVisualiser.UI
                 return MainDrawingSubject;
             }
 
-            DiagramElement search = this.allElements.FirstOrDefault(e => e.DiagramContent.Id == parentAssociation.AssociatedFrom.Id);
+            IDiagramElement search = this.allElements.FirstOrDefault(e => e.DiagramContent.Id == parentAssociation.AssociatedFrom.Id);
             if (search == null)
             {
                 return MainDrawingSubject;

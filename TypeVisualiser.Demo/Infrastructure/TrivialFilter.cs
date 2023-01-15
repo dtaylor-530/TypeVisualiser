@@ -35,12 +35,12 @@ namespace TypeVisualiser
             {
                 if (!this.hasLoadedTypes)
                 {
-                    this.trivialTypes = this.deserialiseXmlIntoCollection();                    
+                    this.trivialTypes = this.deserialiseXmlIntoCollection();
                 }
 
                 return this.trivialTypes;
             }
-        } 
+        }
 
         public bool HideTrivialTypes
         {
@@ -108,8 +108,15 @@ namespace TypeVisualiser
         /// <returns>
         ///   <c>true</c> if the specified element is visible; otherwise, <c>false</c>.
         /// </returns>
-        public bool IsVisible(IDiagramElement element, bool primaryDiagramElement)
+        public bool IsVisible(object value, bool primaryDiagramElement)
         {
+
+            if (value is not IDiagramElement element)
+            {
+                throw new ArgumentNullResourceException("value", "Resources.General_Given_Parameter_Cannot_Be_Null");
+
+            }
+
             if (element == null || element.DiagramContent == null)
             {
                 throw new ArgumentNullResourceException("element", "Resources.General_Given_Parameter_Cannot_Be_Null");
@@ -141,10 +148,12 @@ namespace TypeVisualiser
             {
                 if (!primaryDiagramElement)
                 {
-                    if ((element.DiagramContent is ConnectionLine || element.DiagramContent is ArrowHead))
+
+                    if (element.DiagramContent is ConnectionLine || element.DiagramContent is ArrowHead)
                     {
                         shouldShow = !HideSecondaryAssociations;
                     }
+
                 }
             }
 

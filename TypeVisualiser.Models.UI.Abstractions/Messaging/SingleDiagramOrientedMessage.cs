@@ -1,4 +1,4 @@
-namespace TypeVisualiser.Messaging
+namespace TypeVisualiser.Models.UI.Abstractions.Messaging
 {
     using System;
     using GalaSoft.MvvmLight.Messaging;

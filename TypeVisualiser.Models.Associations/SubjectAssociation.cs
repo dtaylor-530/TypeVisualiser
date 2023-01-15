@@ -1,14 +1,21 @@
 namespace TypeVisualiser.Model
 {
     using System;
-
+    using TypeVisualiser.Abstractions;
     using TypeVisualiser.Geometry;
+    using TypeVisualiser.WPF.Common;
 
     public class SubjectAssociation : Association
     {
-        public SubjectAssociation(IApplicationResources resources, ITrivialFilter trivialFilter)
+        private readonly ILineHeadFactory lineHeadFactory;
+
+        public SubjectAssociation(
+            ILineHeadFactory lineHeadFactory,
+            IApplicationResources resources,
+            ITrivialFilter trivialFilter)
             : base(resources, trivialFilter)
         {
+            this.lineHeadFactory = lineHeadFactory;
         }
 
         public override string Name
@@ -31,13 +38,13 @@ namespace TypeVisualiser.Model
             return subjectArea;
         }
 
-        public override ArrowHead CreateLineHead()
-        {
-            // A subject association may still be asked to style an arrowhead if a secondary relationship points back to the subject.
-            return new AssociationArrowHead();
-        }
+        public override IDiagramContentFunctionality CreateLineHead() => lineHeadFactory.CreateLineHead(this);
+        //{
+        //    // A subject association may still be asked to style an arrowhead if a secondary relationship points back to the subject.
+        //    return new AssociationArrowHead();
+        //}
 
-        public override void StyleLine(ConnectionLine line)
+        public override void StyleLine(IConnectionLine line)
         {
             // A subject association may still be asked to style a line if a secondary relationship points back to the subject.
             FieldAssociation.StyleLineForNonParentAssociation(line, 1, this.AssociatedTo, this.IsTrivialAssociation());

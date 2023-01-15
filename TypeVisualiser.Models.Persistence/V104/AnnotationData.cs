@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using TypeVisualiser.WPF.Common;
 
 namespace TypeVisualiser.Model.Persistence.V104
 {

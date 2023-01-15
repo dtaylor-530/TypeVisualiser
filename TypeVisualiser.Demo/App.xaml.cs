@@ -75,9 +75,16 @@
                 config =>
                     {
                         config.For<IApplicationResources>().Use<DefaultApplicationResources>();
-                        config.For<IConnectorBuilder>().Use<FixedPointCollectionConnectorBuilder>().Named(ConnectorType.Snap.ToString());
-                        config.For<IConnectorBuilder>().Use<DirectLineConnectorBuilder>().Named(ConnectorType.Direct.ToString());
+                        config.For<IConnectorBuilder>().Singleton().Use<FixedPointCollectionConnectorBuilder>().Named(ConnectorType.Snap.ToString());
+                        config.For<IConnectorBuilder>().Singleton().Use<DirectLineConnectorBuilder>().Named(ConnectorType.Direct.ToString());
+                        
+                        config.For<IConnectorBuilder>().Singleton().Use<ConnectorBuilder>();
+                        config.Forward<IConnectorBuilder,IConnectorBuilderSetter>();
+
                         config.For<IDiagramDimensions>().Singleton().Use<DiagramDimensions>();
+                        config.For<IDiagramController>().Use<ViewportController>().Singleton();
+                        config.For<IDiagram>().Use<Diagram>();
+                        config.For<IDiagramElementFactory>().Use<DiagramElementFactory>().Singleton();
 
                         // TODO this is broken - shouldnt be a singleton there is one per diagram. Its only working because it is refreshed each time a diagram is displayed.
                         config.For<IFileManager<IVisualisableTypeWithAssociations>>().Singleton().Use<FileManager>();
@@ -87,6 +94,9 @@
                         config.For<IModelBuilder>().Singleton().Use<ModelBuilder>();
                         config.For<IRecentFiles>().Singleton().Use<RecentFilesXml>();
                         config.For<ITrivialFilter>().Singleton().Use<TrivialFilter>();
+                        config.For<ILineHeadFactory>().Singleton().Use<LineHeadFactory>();
+                        config.For<IAssociationDataFactory>().Singleton().Use<AssociationDataFactory>();
+                        config.For<IAreaCalculater>().Singleton().Use<AreaCalculater>();
                         config.For<IVisualisableType>().Use<VisualisableType>();
                         config.For<IVisualisableTypeWithAssociations>().Use<VisualisableTypeWithAssociations>();
                         config.For<IShowDialog>().Singleton().Use<ShowDialog>();

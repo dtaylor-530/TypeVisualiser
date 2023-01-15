@@ -1,11 +1,9 @@
 ﻿<UserControl x:Class="TypeVisualiser.UI.Views.ShellTabControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              mc:Ignorable="d"
-             xmlns:Assets="clr-namespace:TypeVisualiser.UI.Assets;assembly=TypeVisualiser.WPF.Library"
              xmlns:Converters="clr-namespace:TypeVisualiser.UI.Converters;assembly=TypeVisualiser.WPF.Library"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models"
              xmlns:ass="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models.Associations"
              xmlns:Persistence="clr-namespace:TypeVisualiser.Model.Persistence;assembly=TypeVisualiser.Models.Persistence"
              xmlns:vm="clr-namespace:TypeVisualiser.UI;assembly=TypeVisualiser.ViewModels"
@@ -21,8 +19,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <Converters:NotBooleanToVisibilityConverter x:Key="NotBoolToVisConverter" />
-            <Converters:StringToStyleConverter x:Key="StyleConverter" />
-            <Converters:RelativeConnectionLineConverter x:Key="RelativeConnectionLineConverter" />
+
             <RoutedCommand x:Key="ZoomToFitRoutedCommand" />
             <!-- 
                 Override the style of the ListBox to remove the ScrollViewer.
@@ -68,11 +65,20 @@
                         Value="False" />
                 <Setter Property="Canvas.ZIndex"
                         Value="{Binding ZOrder}" />
+                <EventSetter Event="MouseDown"
+                                 Handler="OnDiagramElementMouseDown" />        
+                <EventSetter Event="MouseMove"
+                                 Handler="OnDiagramElementMouseMove" />     
+                <EventSetter Event="MouseUp"
+                                 Handler="OnDiagramElementMouseUp" />       
+                <EventSetter Event="SizeChanged"
+                                 Handler="OnDiagramElementSizeChanged" />
                 <Setter Property="Template">
                     <Setter.Value>
 
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <ContentPresenter />
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}"
+                                        >
+                            <ContentPresenter Button.Click="OnMoreInfoClicked"/>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsEnabled"
                                          Value="false">
@@ -85,25 +91,7 @@
                 </Setter>
             </Style>
 
-            <DataTemplate DataType="{x:Type Model:DiagramElement}">
-                <!-- This template contains common properties for width and height and movement. -->
-                <Grid MouseDown="OnDiagramElementMouseDown"
-                      MouseMove="OnDiagramElementMouseMove"
-                      MouseUp="OnDiagramElementMouseUp"
-                      SizeChanged="OnDiagramElementSizeChanged">
-                    <ContentPresenter Content="{Binding DiagramContent}" />
-                    <Button Width="8"
-                            Height="8"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Left"
-                            Background="White"
-                            Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.DebugMode, Converter={StaticResource BoolToVisConverter}}"
-                            ToolTip="Debug info"
-                            Click="OnMoreInfoClicked">
-                    </Button>
-                    
-                </Grid>
-            </DataTemplate>
+      
 
             <DataTemplate DataType="{x:Type ass:Association}">
                 <Grid Cursor="Hand">
@@ -165,38 +153,6 @@
                 </Grid>
             </DataTemplate>
 
-            <DataTemplate DataType="{x:Type Model:AssociationArrowHead}">
-                <Assets:AssociationHead Visibility="{Binding DataContext.Show, Converter={StaticResource BoolToVisConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                                        MouseLeftButtonUp="OnLineClicked"/>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type Model:InheritanceArrowHead}">
-                <Assets:InheritanceHead  Visibility="{Binding DataContext.Show, Converter={StaticResource BoolToVisConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"/>
-            </DataTemplate>
-
-            <DataTemplate DataType="{x:Type Model:ConnectionLine}">
-                <Line IsHitTestVisible="True"
-                      MouseLeftButtonUp="OnLineClicked"
-                      StrokeThickness="{Binding Thickness}"
-                      Style="{Binding Style, Converter={StaticResource StyleConverter}}"
-                      ToolTip="{Binding ToolTip}"
-                      Visibility="{Binding DataContext.Show, Converter={StaticResource BoolToVisConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}}"
-                      X1="0"
-                      Y1="0">
-                    <Line.X2>
-                        <MultiBinding Converter="{StaticResource RelativeConnectionLineConverter}">
-                            <Binding Path="From.X" />
-                            <Binding Path="ToLineEnd.X" />
-                        </MultiBinding>
-                    </Line.X2>
-                    <Line.Y2>
-                        <MultiBinding Converter="{StaticResource RelativeConnectionLineConverter}">
-                            <Binding Path="From.Y" />
-                            <Binding Path="ToLineEnd.Y" />
-                        </MultiBinding>
-                    </Line.Y2>
-                </Line>
-            </DataTemplate>
 
             <DataTemplate DataType="{x:Type Persistence:AnnotationData}">
                 <Views:Annotation EditRequested="OnAnnotationEditRequested" />

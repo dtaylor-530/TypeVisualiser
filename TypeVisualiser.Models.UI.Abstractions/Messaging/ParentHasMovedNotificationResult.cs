@@ -1,6 +1,7 @@
 using System.Windows;
+using TypeVisualiser.WPF.Common;
 
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.Models.UI.Abstractions.Messaging
 {
     /// <summary>
     /// A result class for <see cref="IDiagramContentFunctionality.NotifyDiagramContentParentHasMoved"/>.

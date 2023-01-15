@@ -7,7 +7,6 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using System.Xml;
-    using StructureMap;
     using TypeVisualiser.Abstractions;
     using TypeVisualiser.DemoTypes;
     using TypeVisualiser.Messaging;

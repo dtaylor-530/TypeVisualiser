@@ -9,6 +9,8 @@ using TypeVisualiser.Abstractions;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Library;
 using TypeVisualiser.Messaging;
+using TypeVisualiser.Models.UI.Abstractions.Messaging;
+using TypeVisualiser.WPF.Common;
 
 namespace TypeVisualiser.Model
 {
@@ -17,7 +19,7 @@ namespace TypeVisualiser.Model
     /// separate from the model.  This type should not be tied to the Type Visualiser type.
     /// </summary>
     [DebuggerDisplay("DiagramElement Content={DiagramContent}")]
-    public class DiagramElement : INotifyPropertyChanged, ICleanup, IDiagramElement
+    public class DiagramElement : INotifyPropertyChanged, IDiagramElement
     {
         private readonly Guid diagramId;
         private readonly IMessenger messenger;
@@ -64,14 +66,14 @@ namespace TypeVisualiser.Model
 
             private set
             {
-                this.doNotUseDiagramContent = value as IDiagramContentFunctionality?? throw new Exception(" 5546 5");
+                this.doNotUseDiagramContent = value as IDiagramContentFunctionality ?? throw new Exception(" 5546 5");
                 RaisePropertyChanged("DiagramContent");
             }
         }
 
         public double Height { get; set; }
-        public Func<DiagramElement, bool, bool> IsVisibleAdditionalLogic { get; set; }
-        public IEnumerable<DiagramElement> RelatedDiagramElements { get; private set; }
+        public Func<IDiagramElement, bool, bool> IsVisibleAdditionalLogic { get; set; }
+        public IEnumerable<IDiagramElement> RelatedDiagramElements { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this diagram element is shown.
@@ -156,7 +158,7 @@ namespace TypeVisualiser.Model
             RaisePositionChangedEvent();
         }
 
-        public void RegisterPositionDependency(IEnumerable<DiagramElement> dependentElements, Func<Area, ProximityTestResult> isOverlappingFunction)
+        public void RegisterPositionDependency(IEnumerable<IDiagramElement> dependentElements, Func<Area, ProximityTestResult> isOverlappingFunction)
         {
             RelatedDiagramElements = dependentElements.ToList();
             doNotUseDiagramContent.RegisterPositionDependency(RelatedDiagramElements, isOverlappingFunction);

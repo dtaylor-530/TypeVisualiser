@@ -45,8 +45,8 @@ namespace TypeVisualiser.UI
         private readonly IFileManager<IVisualisableTypeWithAssociations> fileManager;
         private bool connectorTypeDirect;
         private bool connectorTypeSnap;
-        private Diagram currentView;
-        private bool debugMode;
+        private IDiagram currentView;
+        private bool debugMode = true;
         private ITypeVisualiserLayoutFile diagramFile;
         private bool isLoading;
         private int loadingProgress;
@@ -82,7 +82,7 @@ namespace TypeVisualiser.UI
             this.fileManager = factory.GetInstance<IFileManager<IVisualisableTypeWithAssociations>>();
             this.fileManager.Initialise();
             Current = this;
-            OpenViews = new ObservableCollection<Diagram>();
+            OpenViews = new ObservableCollection<IDiagram>();
             //OnLoadDemoTypeExecute();
         }
 
@@ -121,8 +121,7 @@ namespace TypeVisualiser.UI
                 RaisePropertyChanged("ConnectorTypeDirect");
                 if (value)
                 {
-                    var connectorBuilder = this.container.TryGetInstance<IConnectorBuilder>(ConnectorType.Direct.ToString());
-                    ConnectionLine.ConnectorBuilder = connectorBuilder ?? new DirectLineConnectorBuilder();
+                    this.container.GetInstance<IConnectorBuilderSetter>().Set(ConnectorType.Direct);
                     ConnectorTypeSnap = false;
                     if (CurrentView != null)
                     {
@@ -147,7 +146,7 @@ namespace TypeVisualiser.UI
                 RaisePropertyChanged("ConnectorTypeSnap");
                 if (value)
                 {
-                    ConnectionLine.ConnectorBuilder = this.container.GetInstance<IConnectorBuilder>(ConnectorType.Snap.ToString());
+                    this.container.GetInstance<IConnectorBuilderSetter>().Set(ConnectorType.Snap);
                     ConnectorTypeDirect = false;
                     if (CurrentView != null)
                     {
@@ -161,7 +160,7 @@ namespace TypeVisualiser.UI
             }
         }
 
-        public Diagram CurrentView
+        public IDiagram CurrentView
         {
             get { return this.currentView; }
 
@@ -306,7 +305,7 @@ namespace TypeVisualiser.UI
             }
         }
 
-        public ObservableCollection<Diagram> OpenViews { get; private set; }
+        public ObservableCollection<IDiagram> OpenViews { get; private set; }
 
         public ObservableCollection<RecentFile> RecentFiles
         {
@@ -330,7 +329,7 @@ namespace TypeVisualiser.UI
 
         public ICommand TabCloseCommand
         {
-            get { return new RelayCommand<Diagram>(OnTabCloseExecute, _ => !IsLoading); }
+            get { return new RelayCommand<IDiagram>(OnTabCloseExecute, _ => !IsLoading); }
         }
 
         public string Title
@@ -360,9 +359,9 @@ namespace TypeVisualiser.UI
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Not possible to wrap into a using block. Is disposed by OnTabCloseExecute")]
-        protected virtual Diagram CreateDiagram()
+        protected virtual IDiagram CreateDiagram()
         {
-            return new Diagram(Messenger, new ViewportController(this.container));
+            return container.GetInstance<IDiagram>(); 
         }
 
         public override void RaisePropertyChanged(string propertyName)
@@ -436,7 +435,7 @@ namespace TypeVisualiser.UI
 
         private void OnDiagramFinishedLoading(object sender, EventArgs e)
         {
-            var diagram = sender as Diagram;
+            var diagram = sender as IDiagram;
             if (diagram == null)
             {
                 return;
@@ -454,7 +453,7 @@ namespace TypeVisualiser.UI
 
         private void OnDiagramFinishedLoadingFromFile(object sender, EventArgs e)
         {
-            var diagram = sender as Diagram;
+            var diagram = sender as IDiagram;
             if (diagram == null)
             {
                 return;
@@ -523,7 +522,7 @@ namespace TypeVisualiser.UI
             IVisualisableTypeWithAssociations subject = this.fileManager.LoadDemoType();
             Dispatcher.BeginInvoke(() =>
                 {
-                    Diagram diagram = CreateDiagram();
+                    IDiagram diagram = CreateDiagram();
                     OpenViews.Add(diagram);
                     CurrentView = diagram;
                     diagram.Controller.DiagramLoaded += OnDiagramFinishedLoading;
@@ -625,7 +624,7 @@ namespace TypeVisualiser.UI
             this.fileManager.SaveDiagram(saveData);
         }
 
-        private void OnTabCloseExecute(Diagram diagram)
+        private void OnTabCloseExecute(IDiagram diagram)
         {
             if (OpenViews.Count == 1)
             {
@@ -663,7 +662,7 @@ namespace TypeVisualiser.UI
             Dispatcher.BeginInvoke(() =>
                 {
                     // Ensure UI bound properties set by UI thread.
-                    Diagram diagram = CreateDiagram();
+                    IDiagram diagram = CreateDiagram();
                     OpenViews.Add(diagram);
                     CurrentView = diagram;
                     CurrentView.Controller.DiagramLoaded += diagramFinishedLoadingHandler;

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
@@ -14,6 +14,7 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\TypeVisualiser.Abstractions\TypeVisualiser.Abstractions.csproj" />
+	  <ProjectReference Include="..\TypeVisualiser.Geometry\TypeVisualiser.WPF.Geometry.csproj" />
 	  <ProjectReference Include="..\TypeVisualiser.RecentFiles\TypeVisualiser.RecentFiles.csproj" />
 	</ItemGroup>
 	

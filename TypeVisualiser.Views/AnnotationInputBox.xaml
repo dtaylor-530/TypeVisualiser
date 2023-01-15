@@ -1,11 +1,16 @@
 ﻿<WpfUtilities:GlassWindow x:Class="TypeVisualiser.UI.Views.AnnotationInputBox"
                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          mc:Ignorable="d"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                           xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           Background="Transparent"
                           GlassThickness="200"
                           Height="120"
-                          Icon="/TypeVisualiser.WPF.Views;component/Assets/MainIcon.png"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
+                          xmlns:lib="clr-namespace:TypeVisualiser.UI.Views"
+                          d:DataContext="{d:DesignInstance lib:AnnotationInputBox}"
                           Loaded="OnWindowLoaded"
                           ResizeMode="CanResize"
                           Title="Annotate"
@@ -15,7 +20,7 @@
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

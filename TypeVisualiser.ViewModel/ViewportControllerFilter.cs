@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Threading;
-
+    using TypeVisualiser.Library;
     using TypeVisualiser.Model;
     using TypeVisualiser.UI.WpfUtilities;
 
@@ -16,11 +16,11 @@
 
         public ViewportControllerFilter(ITrivialFilter trivialFilter)
         {
-            this.SecondaryAssociationElements = new Dictionary<string, DiagramElement>();
+            this.SecondaryAssociationElements = new Dictionary<string, IDiagramElement>();
             this.trivialFilter = trivialFilter;
         }
 
-        internal IEnumerable<DiagramElement> DiagramElements { get; set; }
+        internal IEnumerable<IDiagramElement> DiagramElements { get; set; }
 
         internal Dispatcher Dispatcher
         {
@@ -35,7 +35,7 @@
             }
         }
 
-        internal IDictionary<string, DiagramElement> SecondaryAssociationElements { get; set; }
+        internal IDictionary<string, IDiagramElement> SecondaryAssociationElements { get; set; }
 
         public void Clear()
         {
@@ -53,10 +53,10 @@
             Task.Factory.StartNew(
                 () =>
                     {
-                        foreach (DiagramElement element in this.DiagramElements.ToList())
+                        foreach (IDiagramElement element in this.DiagramElements.ToList())
                         {
                             bool show = this.trivialFilter.IsVisible(element, !this.SecondaryAssociationElements.ContainsKey(element.DiagramContent.Id));
-                            DiagramElement copyOfElement = element;
+                            IDiagramElement copyOfElement = element;
                             this.dispatcher.BeginInvoke(() => copyOfElement.Show = show, DispatcherPriority.Normal);
                         }
 
@@ -64,14 +64,14 @@
                         // does not understand the dependency relationships between elements.
                         // The primary lines are shown/hidden based on events raised by the associations. Without doing the below refresh
                         // primary lines are not hidden sometimes.
-                        foreach (DiagramElement element in this.DiagramElements.Where(e => e.DiagramContent is Association).ToList())
+                        foreach (IDiagramElement element in this.DiagramElements.Where(e => e.DiagramContent is Association).ToList())
                         {
                             this.dispatcher.BeginInvoke(element.RefreshPosition, DispatcherPriority.Normal);
                         }
                     });
         }
 
-        internal bool ShouldThisSecondaryElementBeVisible(DiagramElement element, bool showSuggestion)
+        internal bool ShouldThisSecondaryElementBeVisible(IDiagramElement element, bool showSuggestion)
         {
             if (!showSuggestion)
             {

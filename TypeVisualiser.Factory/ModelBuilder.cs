@@ -27,7 +27,7 @@ namespace TypeVisualiser.Model
         public ModelBuilder(IContainer factory)
         {
             this.factory = factory;
-            this.userPrompt = factory.GetInstance< IUserPromptMessage>();
+            this.userPrompt = factory.GetInstance<IUserPromptMessage>();
         }
 
         protected IContainer Factory
@@ -176,7 +176,7 @@ namespace TypeVisualiser.Model
                 {
                     Logger.Instance.WriteEntry("Cached type retrieved does not matched expected fully qualified name.\n{0}\n{1}", type.AssemblyQualifiedName, cachedType.AssemblyQualifiedName);
                     Debug.Assert(
-                        type.AssemblyQualifiedName == cachedType.AssemblyQualifiedName, 
+                        type.AssemblyQualifiedName == cachedType.AssemblyQualifiedName,
                         "Cached type does not match the type required - matching by GUID may not be working as intended. " + type.AssemblyQualifiedName + " != " + cachedType.AssemblyQualifiedName);
                 }
 

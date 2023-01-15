@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using GalaSoft.MvvmLight;
+using TypeVisualiser.Library;
 using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
 
@@ -82,6 +83,8 @@ namespace TypeVisualiser.Models.Abstractions
         /// </summary>
         /// <param name="diagram">The new host diagram.</param>
         void SetHostDiagram(IDiagram diagram);
+
+        void ShowLineDetails(IDiagramElement? element);
     }
 
 

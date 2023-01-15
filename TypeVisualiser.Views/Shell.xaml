@@ -4,7 +4,6 @@
                           xmlns:UI="clr-namespace:TypeVisualiser.UI;assembly=TypeVisualiser.ViewModels"
                           xmlns:Views="clr-namespace:TypeVisualiser.UI.Views"
                           xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
-                          xmlns:Model="clr-namespace:TypeVisualiser.Model;assembly=TypeVisualiser.Models"
                           Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
                           GlassThickness="4,55,19,45"
                           Background="Transparent"
@@ -53,11 +52,7 @@
                                     Background="{StaticResource MenuBackgroundBrush}"
                                     ItemsSource="{Binding OpenViews}"
                                     SelectedItem="{Binding CurrentView}">
-                <Views:CachedTabControl.Resources>
-                    <DataTemplate DataType="{x:Type Model:Diagram}">
-                        <Views:ShellTabControl />
-                    </DataTemplate>
-                </Views:CachedTabControl.Resources>
+             
                 <Views:CachedTabControl.Template>
                     <ControlTemplate TargetType="TabControl">
                         <DockPanel>

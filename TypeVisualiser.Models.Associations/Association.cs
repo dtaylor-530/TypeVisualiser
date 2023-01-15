@@ -8,9 +8,11 @@ namespace TypeVisualiser.Model
     using TypeVisualiser.Library;
     using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
+    using TypeVisualiser.Models.UI.Abstractions.Messaging;
+    using TypeVisualiser.WPF.Common;
 
     [Persistent]
-    public abstract class Association : ICalculatedPositionDiagramContent, IName
+    public abstract class Association : ICalculatedPositionDiagramContent, IAssociation
     {
         private readonly ITrivialFilter trivialFilter;
 
@@ -142,9 +144,9 @@ namespace TypeVisualiser.Model
             return string.Format(CultureInfo.CurrentCulture, "{0}: {1}", this.GetType().Name, this.AssociatedTo.Name);
         }
 
-        public abstract ArrowHead CreateLineHead();
+        public abstract IDiagramContentFunctionality CreateLineHead();
 
-        public abstract void StyleLine(ConnectionLine line);
+        public abstract void StyleLine(IConnectionLine line);
 
         protected static void CannotUseWithoutInitializationFirst()
         {

@@ -12,6 +12,6 @@ namespace TypeVisualiser.Models.Abstractions
         /// <summary>
         /// Calculate the best line connecting <see cref="fromArea"/> to <see cref="destinationArea"/>
         /// </summary>
-        ConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls);
+        IConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls);
     }
 }

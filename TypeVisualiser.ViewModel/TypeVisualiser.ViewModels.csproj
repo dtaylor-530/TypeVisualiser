@@ -14,9 +14,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TypeVisualiser.Messaging.WPF\TypeVisualiser.Messaging.WPF.csproj" />
+    <ProjectReference Include="..\TypeVisualiser.Models.Abstractions\TypeVisualiser.Models.Abstractions.csproj" />
     <ProjectReference Include="..\TypeVisualiser.Models.Associations\TypeVisualiser.Models.Associations.csproj" />
     <ProjectReference Include="..\TypeVisualiser.Models.Persistence\TypeVisualiser.Models.Persistence.csproj" />
-    <ProjectReference Include="..\TypeVisualiser.Models\TypeVisualiser.Models.csproj" />
   </ItemGroup>
 
 </Project>

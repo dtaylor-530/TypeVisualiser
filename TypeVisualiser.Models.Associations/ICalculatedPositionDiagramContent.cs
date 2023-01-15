@@ -1,6 +1,6 @@
 using System;
 using TypeVisualiser.Geometry;
-using TypeVisualiser.Model;
+using TypeVisualiser.WPF.Common;
 
 namespace TypeVisualiser.Models.Abstractions
 {

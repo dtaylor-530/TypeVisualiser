@@ -1,3 +1,4 @@
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,14 @@ namespace TypeVisualiser.Model
     /// </summary>
     public class FixedPointCollectionConnectorBuilder : IConnectorBuilder
     {
-        public ConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls)
+        private readonly IContainer container;
+
+        public FixedPointCollectionConnectorBuilder(IContainer container)
+        {
+            this.container = container;
+        }
+
+        public IConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls)
         {
             var fromConnectors = GetAllConnectorPoints(fromArea, false);
             var toLineEndConnectors = GetAllConnectorPoints(destinationArea, true);
@@ -43,7 +51,7 @@ namespace TypeVisualiser.Model
             //    }
             //} 
 
-            return new ConnectionLine
+            return new ConnectionLine(container)
                 {
                     Distance = chosenfromConnector.Item1.Value.DistanceTo(toConnectorsInOrderOfPreference[0].Item1.Value),
                     From = chosenfromConnector.Item1.Value,

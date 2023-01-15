@@ -1,5 +1,6 @@
 ﻿namespace TypeVisualiser.Model
 {
+    using StructureMap;
     using System;
     using System.Windows;
 
@@ -11,6 +12,12 @@
     /// </summary>
     public class DirectLineConnectorBuilder : IConnectorBuilder
     {
+        private readonly IContainer container;
+
+        public DirectLineConnectorBuilder(IContainer container)
+        {
+            this.container = container;
+        }
         /// <summary>
         /// Calculate the best line connecting <see cref="fromArea"/> to <see cref="destinationArea"/>
         /// </summary>
@@ -26,7 +33,7 @@
         /// <returns>
         /// The <see cref="ConnectionLine"/>.
         /// </returns>
-        public ConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls)
+        public IConnectionLine CalculateBestConnection(Area fromArea, Area destinationArea, Func<Area, ProximityTestResult> isOverlappingWithOtherControls)
         {
             double fromAngle = fromArea.Centre.AngleToPointInDegrees(destinationArea.Centre);
             Point fromIdealPoint = fromArea.CalculateCircumferenceIntersectionPoint(fromAngle);
@@ -54,7 +61,7 @@
                 toLineEnd.Offset(-offset2, -offset1);
             }
 
-            return new ConnectionLine
+            return new ConnectionLine(container)
                 {
                     Distance = fromIdealPoint.DistanceTo(toIdealPoint), 
                     ExitAngle = CalculateExitAngle(fromAngle), 

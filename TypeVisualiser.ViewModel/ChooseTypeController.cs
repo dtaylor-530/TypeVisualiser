@@ -105,33 +105,33 @@ namespace TypeVisualiser.UI
             {
                 if (type.IsClass)
                 {
-                    return "../Assets/PublicClass.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/PublicClass.png";
                 }
 
                 if (type.IsEnum)
                 {
-                    return "../Assets/PublicEnum.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/PublicEnum.png";
                 }
 
                 if (type.IsInterface)
                 {
-                    return "../Assets/PublicInterface.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/PublicInterface.png";
                 }
             }
 
             if (type.IsEnum)
             {
-                return "../Assets/InternalEnum.png";
+                return "/TypeVisualiser.WPF.Library;component/Assets/InternalEnum.png";
             }
 
             if (type.IsClass || type.IsValueType)
             {
-                return "../Assets/InternalClass.png";
+                return "/TypeVisualiser.WPF.Library;component/Assets/InternalClass.png";
             }
 
             if (type.IsInterface)
             {
-                return "../Assets/InternalInterface.png";
+                return "/TypeVisualiser.WPF.Library;component/Assets/InternalInterface.png";
             }
 
             return null;

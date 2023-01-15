@@ -18,11 +18,11 @@ namespace TypeVisualiser.UI.Converters
             switch (memberKind)
             {
                 case MemberKind.Field:
-                    return "../Assets/Field.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/Field.png";
                 case MemberKind.Method:
-                    return "../Assets/Method.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/Method.png";
                 default:
-                    return "../Assets/Property.png";
+                    return "/TypeVisualiser.WPF.Library;component/Assets/Property.png";
             }
         }
 

@@ -5,9 +5,8 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
     using TypeVisualiser.Abstractions;
-    using TypeVisualiser.Messaging;
-    using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
+    using TypeVisualiser.Models.UI.Abstractions.Messaging;
 
     /// <summary>
     /// A class representing any diagram instance. Not just a type dependency diagram.

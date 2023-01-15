@@ -3,20 +3,32 @@ namespace TypeVisualiser.Model
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Windows;
-
+    using TypeVisualiser.Abstractions;
+    using TypeVisualiser.Demo.Infrastructure;
     using TypeVisualiser.Geometry;
+    using TypeVisualiser.Library;
     using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
+    using TypeVisualiser.WPF.Common;
 
     public class ParentAssociation : Association
     {
+        private readonly ILineHeadFactory lineHeadFactory;
+        private readonly IAreaCalculater areaCalculator;
         private readonly IModelBuilder modelBuilder;
 
         private string fieldName;
 
-        public ParentAssociation(IApplicationResources resources, ITrivialFilter trivialFilter, IModelBuilder modelFactory)
+        public ParentAssociation(
+            ILineHeadFactory lineHeadFactory,
+            IAreaCalculater areaCalculator,
+            IApplicationResources resources,
+            ITrivialFilter trivialFilter,
+            IModelBuilder modelFactory)
             : base(resources, trivialFilter)
         {
+            this.lineHeadFactory = lineHeadFactory;
+            this.areaCalculator = areaCalculator;
             this.modelBuilder = modelFactory;
         }
 
@@ -106,56 +118,57 @@ namespace TypeVisualiser.Model
                 //throw new ArgumentNullResourceException("overlapsWithOthers", Resources.General_Given_Parameter_Cannot_Be_Null);
             }
 
-            Point proposedTopLeft = subjectArea.TopLeft.Clone();
+            return areaCalculator.Calculate(actualWidth, actualHeight, subjectArea, overlapsWithOthers);
+            //Point proposedTopLeft = subjectArea.TopLeft.Clone();
 
-            // Suggest directly above
-            proposedTopLeft.Offset(0, -(actualHeight + (2.5 * ArrowHead.ArrowWidth)));
-            var proposedArea = new Area(proposedTopLeft, actualWidth, actualHeight);
+            //// Suggest directly above
+            //proposedTopLeft.Offset(0, -(actualHeight + (2.5 * ArrowHead.ArrowWidth)));
+            //var proposedArea = new Area(proposedTopLeft, actualWidth, actualHeight);
 
-            while (overlapsWithOthers(proposedArea).Proximity == Proximity.Overlapping)
-            {
-                // Try left
-                Area moveLeftProposal = proposedArea;
-                do
-                {
-                    moveLeftProposal = moveLeftProposal.Offset(-(actualWidth + LayoutConstants.MinimumDistanceBetweenObjects), 0);
-                }
-                while (overlapsWithOthers(moveLeftProposal).Proximity == Proximity.Overlapping);
+            //while (overlapsWithOthers(proposedArea).Proximity == Proximity.Overlapping)
+            //{
+            //    // Try left
+            //    Area moveLeftProposal = proposedArea;
+            //    do
+            //    {
+            //        moveLeftProposal = moveLeftProposal.Offset(-(actualWidth + LayoutConstants.MinimumDistanceBetweenObjects), 0);
+            //    }
+            //    while (overlapsWithOthers(moveLeftProposal).Proximity == Proximity.Overlapping);
 
-                // Try right
-                Area moveRightProposal = proposedArea;
-                Proximity proximity = overlapsWithOthers(moveRightProposal).Proximity;
-                while (proximity != Proximity.NotOverlapping)
-                {
-                    if (proximity == Proximity.Overlapping)
-                    {
-                        moveRightProposal = moveRightProposal.Offset(actualWidth + LayoutConstants.MinimumDistanceBetweenObjects, 0);
-                    }
-                    else
-                    {
-                        moveRightProposal = moveRightProposal.Offset(LayoutConstants.MinimumDistanceBetweenObjects / 2, 0);
-                    }
+            //    // Try right
+            //    Area moveRightProposal = proposedArea;
+            //    Proximity proximity = overlapsWithOthers(moveRightProposal).Proximity;
+            //    while (proximity != Proximity.NotOverlapping)
+            //    {
+            //        if (proximity == Proximity.Overlapping)
+            //        {
+            //            moveRightProposal = moveRightProposal.Offset(actualWidth + LayoutConstants.MinimumDistanceBetweenObjects, 0);
+            //        }
+            //        else
+            //        {
+            //            moveRightProposal = moveRightProposal.Offset(LayoutConstants.MinimumDistanceBetweenObjects / 2, 0);
+            //        }
 
-                    proximity = overlapsWithOthers(moveRightProposal).Proximity;
-                }
+            //        proximity = overlapsWithOthers(moveRightProposal).Proximity;
+            //    }
 
-                proposedArea = moveLeftProposal.DistanceToPoint(subjectArea.TopLeft) <= moveRightProposal.DistanceToPoint(subjectArea.TopLeft) ? moveLeftProposal : moveRightProposal;
-            }
+            //    proposedArea = moveLeftProposal.DistanceToPoint(subjectArea.TopLeft) <= moveRightProposal.DistanceToPoint(subjectArea.TopLeft) ? moveLeftProposal : moveRightProposal;
+            //}
 
-            return proposedArea;
+            //return proposedArea;
         }
 
-        public override ArrowHead CreateLineHead()
+        public override IDiagramContentFunctionality CreateLineHead()
         {
             if (!this.IsInitialised)
             {
                 CannotUseWithoutInitializationFirst();
             }
 
-            return new InheritanceArrowHead();
+            return lineHeadFactory.CreateLineHead(this);
         }
 
-        public override void StyleLine(ConnectionLine line)
+        public override void StyleLine(IConnectionLine line)
         {
             if (!this.IsInitialised)
             {

@@ -7,13 +7,15 @@ using System.Windows;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Library;
 using TypeVisualiser.Models.Abstractions;
+using TypeVisualiser.Models.UI.Abstractions.Messaging;
+using TypeVisualiser.WPF.Common;
 
 namespace TypeVisualiser.Model
 {
     /// <summary>
     /// A model class that describes the line between the subject and an association
     /// </summary>
-    public class ConnectionLine : IComparable, IComparable<ConnectionLine>, IDiagramContentFunctionality, INotifyPropertyChanged
+    public class ConnectionLine : IComparable, IComparable<ConnectionLine>, IDiagramContentFunctionality, INotifyPropertyChanged, IConnectionLine
     {
         private Point from;
         private Func<Area, ProximityTestResult> isOverlapping;
@@ -22,16 +24,16 @@ namespace TypeVisualiser.Model
         private DiagramElement primaryParent; // This is either parent1 or parent2
         private Point to;
         private Point toLineEnd;
+        private readonly StructureMap.IContainer container;
 
-        public ConnectionLine()
+        public ConnectionLine(StructureMap.IContainer container)
         {
             Thickness = 2;
             Id = Guid.NewGuid().ToString();
+            this.container = container;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        public static IConnectorBuilder ConnectorBuilder { get; set; }
 
         public double Distance { get; set; }
 
@@ -67,7 +69,7 @@ namespace TypeVisualiser.Model
 
         public IDiagramContentFunctionality PointingAt
         {
-            get { return this.primaryParent.DiagramContent as IDiagramContentFunctionality?? throw new Exception("T4 4 "); }
+            get { return this.primaryParent.DiagramContent as IDiagramContentFunctionality ?? throw new Exception("T4 4 "); }
         }
 
         public string Style { get; set; }
@@ -112,21 +114,6 @@ namespace TypeVisualiser.Model
 
         public string ToolTip { get; private set; }
 
-        /// <summary>
-        /// Finds the best connection location.
-        /// </summary>
-        /// <param name="fromArea">From visual.</param>
-        /// <param name="destinationArea">To visual.</param>
-        /// <param name="isOverlappingWithOtherControls">A function delegate to find out if a proposed area is overlapping with other controls.</param>
-        /// <returns>A pair of points, from and to</returns>
-        public static ConnectionLine FindBestConnectionRoute(
-            Area fromArea, 
-            Area destinationArea, 
-            Func<Area, ProximityTestResult> isOverlappingWithOtherControls)
-        {
-            ConnectionLine result = ConnectorBuilder.CalculateBestConnection(fromArea, destinationArea, isOverlappingWithOtherControls);
-            return result;
-        }
 
         public override string ToString()
         {
@@ -145,12 +132,12 @@ namespace TypeVisualiser.Model
             To = new Point(To.X + horizontalExpandedBy, To.Y + verticalExpandedBy);
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             return CompareTo((ConnectionLine)obj);
         }
 
-        public int CompareTo(ConnectionLine other)
+        public int CompareTo(ConnectionLine? other)
         {
             if (other == null)
             {
@@ -170,8 +157,12 @@ namespace TypeVisualiser.Model
         /// </returns>
         public ParentHasMovedNotificationResult NotifyDiagramContentParentHasMoved(IDiagramElement dependentElement)
         {
-            ConnectionLine route = FindBestConnectionRoute(this.parent1.Area, this.parent2.Area, this.isOverlapping);
-            ClonePropertiesIntoThisInstance(route);
+            IConnectionLine route = container.GetInstance<IConnectorBuilder>().CalculateBestConnection(this.parent1.Area, this.parent2.Area, this.isOverlapping);
+            if (route is not ConnectionLine connectionLine)
+            {
+                throw new Exception("4 tgre fd");
+            }
+            ClonePropertiesIntoThisInstance(connectionLine);
 
             return new ParentHasMovedNotificationResult(route.From);
         }
@@ -186,7 +177,7 @@ namespace TypeVisualiser.Model
             this.isOverlapping = isOverlappingFunction;
             List<IDiagramElement> elements = dependentElements.ToList();
             this.parent1 = elements.FirstOrDefault() as DiagramElement ?? throw new Exception("22x 455 4444");
-            this.parent2 = elements.Skip(1).FirstOrDefault() as DiagramElement?? throw new Exception(" 455 4444");
+            this.parent2 = elements.Skip(1).FirstOrDefault() as DiagramElement ?? throw new Exception(" 455 4444");
 
             if (SetToolTipText(this.parent1))
             {

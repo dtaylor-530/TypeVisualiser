@@ -2,6 +2,7 @@ namespace TypeVisualiser.Messaging
 {
     using System;
     using Model;
+    using TypeVisualiser.Models.UI.Abstractions.Messaging;
 
     public class NavigateToDiagramAssociationMessage : SingleDiagramOrientedMessage
     {

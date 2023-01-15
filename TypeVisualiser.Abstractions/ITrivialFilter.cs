@@ -20,6 +20,6 @@ namespace TypeVisualiser
         /// </returns>
         bool IsTrivialType(string namespaceQualifiedName);
 
-        bool IsVisible(IDiagramElement element, bool primaryDiagramElement);
+        bool IsVisible(object element, bool primaryDiagramElement);
     }
 }

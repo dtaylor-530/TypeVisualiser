@@ -18,6 +18,8 @@
                 <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/TextStyles.xaml" />
                 <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ViewportStyle.xaml" />
                 <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ZoomAndPanStyle.xaml" />
+                
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Templates;component/Templates.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Converters:BooleanToStringConverter x:Key="BoolToStringConverter" />

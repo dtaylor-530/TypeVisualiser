@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using TypeVisualiser.Geometry;
 using TypeVisualiser.Library;
+using TypeVisualiser.Models.UI.Abstractions.Messaging;
 
-namespace TypeVisualiser.Model
+namespace TypeVisualiser.WPF.Common
 {
-    
-    
+
+
     /// <summary>
     /// An interface to encapsulate any diagram content that can appear inside a <see cref="DiagramElement"/>.
     /// </summary>

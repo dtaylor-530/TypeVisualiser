@@ -1,6 +1,7 @@
 using System;
 using TypeVisualiser.Library;
 using TypeVisualiser.Model;
+using TypeVisualiser.Models.UI.Abstractions.Messaging;
 
 namespace TypeVisualiser.Messaging
 {

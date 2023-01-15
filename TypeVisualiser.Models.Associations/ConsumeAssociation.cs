@@ -4,15 +4,24 @@ namespace TypeVisualiser.Model
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-
+    using TypeVisualiser.Abstractions;
     using TypeVisualiser.Model.Persistence;
     using TypeVisualiser.Models.Abstractions;
 
     public class ConsumeAssociation : FieldAssociation
     {
-        public ConsumeAssociation(IApplicationResources resources, ITrivialFilter trivialFilter, IModelBuilder modelBuilder, IDiagramDimensions diagramDimensions)
-            : base(resources, trivialFilter, modelBuilder, diagramDimensions)
+        private readonly IAssociationDataFactory associationDataFactory;
+
+        public ConsumeAssociation(
+            IAssociationDataFactory associationDataFactory,
+            ILineHeadFactory lineHeadFactory,
+            IApplicationResources resources,
+            ITrivialFilter trivialFilter, 
+            IModelBuilder modelBuilder, 
+            IDiagramDimensions diagramDimensions)
+            : base(resources, trivialFilter, modelBuilder, diagramDimensions, lineHeadFactory, associationDataFactory)
         {
+            this.associationDataFactory = associationDataFactory;
         }
 
         public override string Name
@@ -30,13 +39,8 @@ namespace TypeVisualiser.Model
             }
         }
 
-        internal override Type PersistenceType
-        {
-            get
-            {
-                return typeof(ConsumeAssociationData);
-            }
-        }
+        internal override Type PersistenceType => associationDataFactory.GetType(this);
+
 
         /// <summary>
         /// Must be called immediately after the constructor.
@@ -72,7 +76,7 @@ namespace TypeVisualiser.Model
             return this;
         }
 
-        public override void StyleLine(ConnectionLine line)
+        public override void StyleLine(IConnectionLine line)
         {
             if (line == null)
             {

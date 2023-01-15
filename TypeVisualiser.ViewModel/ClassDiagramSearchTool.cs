@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using TypeVisualiser.Library;
 using TypeVisualiser.Model;
 //using TypeVisualiser.Properties;
 
@@ -15,7 +16,7 @@ namespace TypeVisualiser.UI
         /// </summary>
         /// <param name="lineOrArrowhead">A element containing a arrowhead or line</param>
         /// <returns>The <see cref="FieldAssociation"/> being pointed at by the line.</returns>
-        public static FieldAssociation FindAssociationTarget(DiagramElement lineOrArrowhead)
+        public static FieldAssociation FindAssociationTarget(IDiagramElement lineOrArrowhead)
         {
             if (lineOrArrowhead == null)
             {
@@ -23,13 +24,13 @@ namespace TypeVisualiser.UI
                 //throw new ArgumentNullResourceException("lineOrArrowhead", Resources.General_Given_Parameter_Cannot_Be_Null);
             }
 
-            var line = lineOrArrowhead.DiagramContent as ConnectionLine;
+            var line = lineOrArrowhead.DiagramContent as IConnectionLine;
             if (line != null)
             {
                 return line.PointingAt as FieldAssociation;
             }
 
-            line = lineOrArrowhead.RelatedDiagramElements.Single(x => x.DiagramContent is ConnectionLine).DiagramContent as ConnectionLine;
+            line = lineOrArrowhead.RelatedDiagramElements.Single(x => x.DiagramContent is IConnectionLine).DiagramContent as IConnectionLine;
             Debug.Assert(line != null, "Code error: line == null");
             return line.PointingAt as FieldAssociation;
         }

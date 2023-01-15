@@ -7,8 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using TypeVisualiser.Abstractions;
+using TypeVisualiser.Library;
 using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
+using TypeVisualiser.Models.Abstractions;
 
 namespace TypeVisualiser.UI.Views
 {
@@ -17,7 +19,7 @@ namespace TypeVisualiser.UI.Views
     /// </summary>
     public partial class ShellTabControl
     {
-        private DiagramElement currentlyDraggingElement;
+        private IDiagramElement currentlyDraggingElement;
         private Point lastRightMouseButtonClickPosition;
 
         /// <summary>
@@ -55,20 +57,20 @@ namespace TypeVisualiser.UI.Views
             }
         }
 
-        private Diagram Diagram
+        private IDiagram Diagram
         {
-            get { return DataContext as Diagram; }
+            get { return DataContext as IDiagram; }
         }
 
-        private static bool OnlyAssociationsShouldDrag(object sender, out Grid grid)
+        private static bool OnlyAssociationsShouldDrag(object sender, out FrameworkElement grid)
         {
-            grid = sender as Grid;
+            grid = (FrameworkElement)sender;
             if (grid == null)
             {
                 return false;
             }
 
-            var diagramElement = grid.DataContext as DiagramElement;
+            var diagramElement = grid.DataContext as IDiagramElement;
             if (diagramElement == null)
             {
                 return false;
@@ -90,7 +92,7 @@ namespace TypeVisualiser.UI.Views
             double smallestX = 0;
             double smallestY = 0;
             var contentRect = new Rect(0, 0, 0, 0);
-            foreach (DiagramElement diagramElement in Controller.DiagramElements)
+            foreach (IDiagramElement diagramElement in Controller.DiagramElements)
             {
                 if (diagramElement.TopLeft.X < smallestX)
                 {
@@ -174,14 +176,14 @@ namespace TypeVisualiser.UI.Views
 
         private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var oldDiagram = e.OldValue as Diagram;
+            var oldDiagram = e.OldValue as IDiagram;
             if (oldDiagram != null)
             {
                 oldDiagram.Controller.ExpandCanvasRequested -= OnExpandCanvasRequested;
                 oldDiagram.Controller.Cleanup();
             }
 
-            var newDiagram = e.NewValue as Diagram;
+            var newDiagram = e.NewValue as IDiagram;
             if (newDiagram != null)
             {
                 newDiagram.Controller.ExpandCanvasRequested += OnExpandCanvasRequested;
@@ -198,8 +200,7 @@ namespace TypeVisualiser.UI.Views
                 return;
             }
 
-            Grid grid;
-            if (!OnlyAssociationsShouldDrag(sender, out grid))
+            if (!OnlyAssociationsShouldDrag(sender, out var grid))
             {
                 return;
             }
@@ -221,7 +222,7 @@ namespace TypeVisualiser.UI.Views
             }
 
             this.mouseHandlingMode = MouseHandlingMode.DraggingDiagramElements;
-            this.currentlyDraggingElement = grid.DataContext as DiagramElement;
+            this.currentlyDraggingElement = grid.DataContext as IDiagramElement;
             if (this.currentlyDraggingElement == null)
             {
                 throw new InvalidOperationException("Code Error: all data contexts should be Diagram Elements");
@@ -236,8 +237,7 @@ namespace TypeVisualiser.UI.Views
         /// </summary>
         private void OnDiagramElementMouseMove(object sender, MouseEventArgs e)
         {
-            Grid grid;
-            if (!OnlyAssociationsShouldDrag(sender, out grid))
+            if (!OnlyAssociationsShouldDrag(sender, out var grid))
             {
                 return;
             }
@@ -273,8 +273,7 @@ namespace TypeVisualiser.UI.Views
                 return;
             }
 
-            Grid grid;
-            if (!OnlyAssociationsShouldDrag(sender, out grid))
+            if (!OnlyAssociationsShouldDrag(sender, out var grid))
             {
                 return;
             }
@@ -290,19 +289,19 @@ namespace TypeVisualiser.UI.Views
             e.Handled = true;
         }
 
-        private void OnDiagramElementSizeChanged(object sender, EventArgs e)
+        private void OnDiagramElementSizeChanged(object sender, SizeChangedEventArgs e)
         {
             // This is basically manual binding back to the height and width properties.
             // It cannot use automatic binding because ActualWidth is a readonly property, and
             // even when set using OneWayToSource it will still not bind.  It will not work
             // with the Width property because this must be set manually for it to have a value.
-            var grid = sender as Grid;
+            var grid = sender as FrameworkElement;
             if (grid == null)
             {
                 return;
             }
 
-            var diagramElement = grid.DataContext as DiagramElement;
+            var diagramElement = grid.DataContext as IDiagramElement;
             if (diagramElement == null)
             {
                 return;
@@ -317,30 +316,6 @@ namespace TypeVisualiser.UI.Views
             ExpandContent();
         }
 
-        private void OnLineClicked(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            var lineOrArrowhead = sender as DependencyObject;
-            DiagramElement element;
-            do
-            {
-                if (lineOrArrowhead == null)
-                {
-                    throw new InvalidCastException("Unable to cast sender to Dependency Object");
-                }
-
-                var bindable = lineOrArrowhead as FrameworkElement;
-                if (bindable != null && bindable.DataContext is DiagramElement)
-                {
-                    element = bindable.DataContext as DiagramElement;
-                    break;
-                }
-
-                lineOrArrowhead = VisualTreeHelper.GetParent(lineOrArrowhead);
-            } while (true);
-
-            Controller.ShowLineDetails(element);
-        }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -563,13 +538,13 @@ namespace TypeVisualiser.UI.Views
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "TypeVisualiser.Messaging.IUserPromptMessage.Show(System.String,System.String)", Justification = "Debug info only")]
         private void OnMoreInfoClicked(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
+            var button = sender as FrameworkElement;
             if (button == null)
             {
                 return;
             }
 
-            var element = button.DataContext as DiagramElement;
+            var element = button.DataContext as IDiagramElement;
             if (element == null)
             {
                 return;

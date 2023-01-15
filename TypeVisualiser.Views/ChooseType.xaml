@@ -6,15 +6,16 @@
                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                           xmlns:WpfUtilities="clr-namespace:TypeVisualiser.UI.WpfUtilities;assembly=WPF.Library"
                           Background="Transparent"
+                              xmlns:lib="clr-namespace:TypeVisualiser.UI.Views"
                           GlassThickness="200"
-                          Icon="/TypeVisualiser.WPF.Views;component/Assets/MainIcon.png"
+                          Icon="/TypeVisualiser.WPF.Library;component/Assets/MainIcon.png"
                           DataContextChanged="OnDataContextChanged"
                           Height="480"
                           Title="{Binding DialogTitle}">
     <WpfUtilities:GlassWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/TypeVisualiser.WPF.Views;component/Style/ButtonStyle.xaml" />
+                <ResourceDictionary Source="/TypeVisualiser.WPF.Library;component/Style/ButtonStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate x:Key="TypeTemplate">

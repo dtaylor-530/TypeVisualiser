@@ -6,10 +6,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using StructureMap;
+using TypeVisualiser.Library;
 using TypeVisualiser.Messaging;
 using TypeVisualiser.Model;
 using TypeVisualiser.Model.Persistence;
 using TypeVisualiser.Models.Abstractions;
+using TypeVisualiser.Models.UI.Abstractions.Messaging;
 using TypeVisualiser.UI.WpfUtilities;
 using TypeVisualiser.ViewModels;
 
@@ -17,20 +19,22 @@ namespace TypeVisualiser.UI
 {
     public class ViewportController : TypeVisualiserControllerBase, IDiagramController, IDiagramCommandsNeedsRefactor
     {
-        private readonly ObservableCollection<DiagramElement> diagramElements = new ObservableCollection<DiagramElement>();
+        private readonly ObservableCollection<IDiagramElement> diagramElements = new ObservableCollection<IDiagramElement>();
         private bool clean;
         private IVisualisableTypeWithAssociations currentSubject;
-        private IContainer doNotUseFactory;
+        private IContainer container;
+        private readonly IDiagramElementFactory diagramElementFactory;
         private ClassUmlDrawingEngine drawingEngine;
         private ViewportControllerFilter filter;
         private bool hideBackground;
         private IDiagram hostDiagram;
+        private IDiagramElement subjectDiagramElement;
 
-        private DiagramElement subjectDiagramElement;
-
-        public ViewportController(IContainer factory) : base(factory)
+        public ViewportController(IContainer container) : base(container)
         {
-            this.doNotUseFactory = factory;
+            this.container = container;
+            diagramElementFactory = container.GetInstance<IDiagramElementFactory>();
+
         }
 
         /// <summary>
@@ -52,7 +56,7 @@ namespace TypeVisualiser.UI
             get { return Subject != null ? Subject.Name : "[New]"; }
         }
 
-        public ObservableCollection<DiagramElement> DiagramElements
+        public ObservableCollection<IDiagramElement> DiagramElements
         {
             get { return this.diagramElements; }
         }
@@ -104,14 +108,14 @@ namespace TypeVisualiser.UI
             }
         }
 
-        public DiagramElement SubjectDiagramElement
+        public IDiagramElement SubjectDiagramElement
         {
             get { return this.subjectDiagramElement; }
         }
 
         protected IContainer Factory
         {
-            get { return this.doNotUseFactory; }
+            get { return this.container; }
         }
 
         private static bool IsLoading
@@ -192,7 +196,7 @@ namespace TypeVisualiser.UI
                 return;
             }
 
-            var diagramElement = new DiagramElement(DiagramId, annotation, doNotUseFactory.GetInstance<Abstractions.IMessenger>()) { TopLeft = where };
+            var diagramElement = diagramElementFactory.Create(DiagramId, annotation, container.GetInstance<Abstractions.IMessenger>(), new DiagramElementConstruction { TopLeft = where });
             DiagramElements.Add(diagramElement);
         }
 
@@ -224,8 +228,8 @@ namespace TypeVisualiser.UI
             Subject = subject;
             Subject.DiscoverSecondaryAssociationsInModel(); // This enables lines on the diagram other than those involving the subject.
             DiagramElements.Clear();
-            this.drawingEngine = new ClassUmlDrawingEngine(doNotUseFactory, DiagramId, subject);
-            foreach (DiagramElement element in this.drawingEngine.DrawAllBoxes())
+            this.drawingEngine = new ClassUmlDrawingEngine(container, DiagramId, subject);
+            foreach (IDiagramElement element in this.drawingEngine.DrawAllBoxes())
             {
                 DiagramElements.Add(element);
             }
@@ -243,9 +247,9 @@ namespace TypeVisualiser.UI
             DiagramElements.Clear();
         }
 
-        public DiagramElement DeleteAnnotation(AnnotationData annotation)
+        public IDiagramElement DeleteAnnotation(AnnotationData annotation)
         {
-            DiagramElement found = DiagramElements.FirstOrDefault(x => x.DiagramContent is AnnotationData && ((AnnotationData)x.DiagramContent).Id == annotation.Id);
+            IDiagramElement found = DiagramElements.FirstOrDefault(x => x.DiagramContent is AnnotationData && ((AnnotationData)x.DiagramContent).Id == annotation.Id);
 
             if (found != null)
             {
@@ -274,7 +278,7 @@ namespace TypeVisualiser.UI
         public IPersistentFileData GatherPersistentData()
         {
             var canvasLayoutData = new CanvasLayoutData();
-            foreach (DiagramElement element in DiagramElements)
+            foreach (IDiagramElement element in DiagramElements)
             {
                 if (Attribute.GetCustomAttribute(element.DiagramContent.GetType(), typeof(PersistentAttribute)) == null)
                 {
@@ -341,12 +345,12 @@ namespace TypeVisualiser.UI
                 if (layoutData.ContentType == typeof(AnnotationData).FullName)
                 {
                     var annotation = new AnnotationData { Id = layoutData.Id, Text = layoutData.Data, };
-                    var annotationElement = new DiagramElement(DiagramId, annotation, doNotUseFactory.GetInstance<Abstractions.IMessenger>()) { Show = layoutData.Visible, TopLeft = layoutData.TopLeft };
+                    var annotationElement = diagramElementFactory.Create(DiagramId, annotation, container.GetInstance<Abstractions.IMessenger>(), new DiagramElementConstruction { Show = layoutData.Visible, TopLeft = layoutData.TopLeft });
                     DiagramElements.Add(annotationElement);
                     continue;
                 }
 
-                DiagramElement element = DiagramElements.FirstOrDefault(x => x.DiagramContent.Id == layoutData.Id);
+                IDiagramElement element = DiagramElements.FirstOrDefault(x => x.DiagramContent.Id == layoutData.Id);
                 if (element == null)
                 {
                     IVisualisableTypeData type = FindTypeInFile(data, layoutData.Id);
@@ -391,7 +395,7 @@ namespace TypeVisualiser.UI
         public void PositionDiagramElements()
         {
             // It is invalid to invoke this when lines have already been drawn.
-            if (DiagramElements.Any(x => x.DiagramContent is ConnectionLine))
+            if (DiagramElements.Any(x => x.DiagramContent is IConnectionLine))
             {
                 throw new InvalidOperationException("Code error: it is invalid to call View Loaded twice for one diagram.");
             }
@@ -418,7 +422,7 @@ namespace TypeVisualiser.UI
                 DispatcherPriority.ContextIdle);
         }
 
-        private Dictionary<string, DiagramElement> DrawConnectingLines(bool redraw)
+        private Dictionary<string, IDiagramElement> DrawConnectingLines(bool redraw)
         {
             if (redraw)
             {
@@ -429,8 +433,8 @@ namespace TypeVisualiser.UI
                 }
             }
 
-            Dictionary<string, DiagramElement> secondaryElements;
-            IEnumerable<DiagramElement> drawnElements = this.drawingEngine.DrawConnectingLines(
+            Dictionary<string, IDiagramElement> secondaryElements;
+            IEnumerable<IDiagramElement> drawnElements = this.drawingEngine.DrawConnectingLines(
                 DiagramElements,
                 this.filter.ShouldThisSecondaryElementBeVisible,
                 out secondaryElements);
@@ -497,14 +501,14 @@ namespace TypeVisualiser.UI
 
         public void TemporarilyHideAssociation(Association association)
         {
-            DiagramElement diagramElement = DiagramElements.FirstOrDefault(x => x.DiagramContent.Equals(association));
+            IDiagramElement diagramElement = DiagramElements.FirstOrDefault(x => x.DiagramContent.Equals(association));
             if (diagramElement != null)
             {
                 diagramElement.Show = false;
             }
         }
 
-        public void ShowLineDetails(DiagramElement arrowheadOrLine)
+        public void ShowLineDetails(IDiagramElement arrowheadOrLine)
         {
             FieldAssociation pointingAtAssociation = ClassDiagramSearchTool.FindAssociationTarget(arrowheadOrLine);
             if (pointingAtAssociation == null)
