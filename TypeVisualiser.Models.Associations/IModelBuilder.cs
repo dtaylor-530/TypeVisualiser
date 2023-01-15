@@ -17,7 +17,5 @@ namespace TypeVisualiser.Models.Abstractions
         IVisualisableTypeWithAssociations BuildSubject(Type type, int depth);
         IVisualisableTypeWithAssociations BuildSubject(string assemblyFile, string fullTypeName, int depth);
         IVisualisableType BuildVisualisableType(Type type, int depth);
-        Type BuildType(string assemblyFile, string fullTypeName);
-        Assembly LoadAssembly(string fileName);
     }
 }

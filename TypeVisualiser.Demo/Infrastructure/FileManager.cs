@@ -9,6 +9,7 @@
     using System.Xml;
     using TypeVisualiser.Abstractions;
     using TypeVisualiser.DemoTypes;
+    using TypeVisualiser.Factory;
     using TypeVisualiser.Messaging;
     using TypeVisualiser.Model;
     using TypeVisualiser.Model.Persistence;
@@ -18,14 +19,10 @@
 
     public class FileManager : IFileManager<IVisualisableTypeWithAssociations>
     {
-        private readonly IMessenger messenger;
+  
         private readonly StructureMap.IContainer container;
-
-        private IModelBuilder doNotUseModelBuilder;
-
-        private IRecentFiles doNotUseRecentFiles;
-
-        private IUserPromptMessage doNotUseUserPrompt;
+        private IMessenger messenger => this.container.GetInstance<IMessenger>();
+        private ITypeBuilder typeBuilder => this.container.GetInstance<ITypeBuilder>();
 
         // ReSharper disable FieldCanBeMadeReadOnly.Local
         private Func<IUserPromptOpenFile> userPromptOpenFileFactory =
@@ -44,27 +41,16 @@
         private Func<IUserPromptSaveFile> userPromptSaveFileFactory = () => new WindowsSaveDialog { AddExtension = true, DefaultExt = "tvd", Filter = "Type Visualiser Diagram (*.tvd)|*.tvd" };
 
         // ReSharper restore FieldCanBeMadeReadOnly.Local
-        public FileManager(IMessenger messenger, StructureMap.IContainer container)
+        public FileManager(StructureMap.IContainer container)
         {
-            this.messenger = messenger;
             this.container = container;
         }
 
-        public virtual IRecentFiles RecentFiles
-        {
-            get
-            {
-                return this.doNotUseRecentFiles ?? (this.doNotUseRecentFiles = this.container.GetInstance<IRecentFiles>());
-            }
-        }
+        public virtual IRecentFiles RecentFiles => this.container.GetInstance<IRecentFiles>();
 
-        protected virtual IModelBuilder ModelBuilder
-        {
-            get
-            {
-                return this.doNotUseModelBuilder ?? (this.doNotUseModelBuilder = this.container.GetInstance<IModelBuilder>());
-            }
-        }
+        protected virtual IModelBuilder ModelBuilder => this.container.GetInstance<IModelBuilder>();
+
+        protected IUserPromptMessage UserPrompt => container.GetInstance<IUserPromptMessage>();
 
         protected virtual string RunningDirectory
         {
@@ -74,18 +60,8 @@
             }
         }
 
-        protected IUserPromptMessage UserPrompt
-        {
-            get
-            {
-                return this.doNotUseUserPrompt ?? (this.doNotUseUserPrompt = new WindowsMessageBox());
-            }
 
-            set
-            {
-                this.doNotUseUserPrompt = value;
-            }
-        }
+ 
 
         public void ChooseAssembly()
         {
@@ -115,7 +91,7 @@
             }
 
             this.RecentFiles.SetCurrentFile(assemblyFileName);
-            return this.ModelBuilder.LoadAssembly(assemblyFileName);
+            return this.typeBuilder.LoadAssembly(assemblyFileName);
         }
 
         public IVisualisableTypeWithAssociations LoadDemoType()
@@ -177,7 +153,7 @@
 
             try
             {
-                type = this.ModelBuilder.BuildType(recentFileData.FileName, recentFileData.TypeName);
+                type = this.typeBuilder.BuildType(recentFileData.FileName, recentFileData.TypeName);
             }
             catch (ArgumentException ex)
             {
@@ -238,7 +214,7 @@
 
         public Type RefreshType(string fullTypeName, string assemblyFileName)
         {
-            return this.ModelBuilder.BuildType(assemblyFileName, fullTypeName);
+            return this.typeBuilder.BuildType(assemblyFileName, fullTypeName);
         }
 
         public void SaveDiagram(IPersistentFileData layoutData)

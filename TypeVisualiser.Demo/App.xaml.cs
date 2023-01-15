@@ -9,6 +9,7 @@
     using TypeVisualiser.Abstractions;
     using TypeVisualiser.Demo;
     using TypeVisualiser.Demo.Infrastructure;
+    using TypeVisualiser.Factory;
     using TypeVisualiser.ILAnalyser;
     using TypeVisualiser.Messaging;
     using TypeVisualiser.Model;
@@ -28,7 +29,7 @@
             base.OnStartup(e);
             this.DispatcherUnhandledException += this.OnDispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += this.OnCurrentDomainUnhandledException;
-            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += ModelBuilder.OnAssemblyResolve;
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolver.OnAssemblyResolve;
 
             Current.Exit += this.OnApplicationExit;
             IoC.MapHardcodedRegistrations(Intialise());
@@ -55,7 +56,7 @@
         private void OnApplicationExit(object sender, ExitEventArgs e)
         {
             Current.Exit -= this.OnApplicationExit;
-            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= ModelBuilder.OnAssemblyResolve;
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolver.OnAssemblyResolve;
             Messenger.Default.Send(new ShutdownMessage());
         }
 
